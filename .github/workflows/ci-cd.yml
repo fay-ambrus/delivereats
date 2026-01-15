@@ -33,7 +33,7 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:latest
 
-    - name: Build and push web-ui
+    - name: Build and push menu-service
       uses: docker/build-push-action@v5
       with:
         context: ./menu-service
@@ -58,5 +58,8 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" web-ui/k8s-web-ui.yaml | kubectl apply -f -
+        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" menu-service/k8s-menu-service.yaml | kubectl apply -f -
+        kubectl apply -f k8s-ingress.yaml
         kubectl rollout status deployment/web-ui --timeout=2m
-        kubectl get pods,svc
+        kubectl rollout status deployment/menu-service --timeout=2m
+        kubectl get pods,svc,ingress

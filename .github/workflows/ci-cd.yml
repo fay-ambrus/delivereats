@@ -29,7 +29,7 @@ jobs:
     - name: Build and push web-ui
       uses: docker/build-push-action@v5
       with:
-        context: ./src/web-ui
+        context: ./web-ui
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:latest
 
@@ -50,6 +50,6 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" src/k8s-web-ui.yaml | kubectl apply -f -
+        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" web-ui/k8s-web-ui.yaml | kubectl apply -f -
         kubectl rollout status deployment/web-ui --timeout=2m
         kubectl get pods,svc

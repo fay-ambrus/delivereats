@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Delivery</title>
+  <title>DeliverEats</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
   <div id="app">
-    <h1>Food Delivery System</h1>
-    <p>Hello from Vue.js on Kubernetes!</p>
+    <h1>DeliverEats</h1>
+    <p>Welcome to DeliverEats!</p>
+    <button @click="count++">
+      Count is: {{ count }}
+    </button>
   </div>
 
   <script src="app.js"></script>

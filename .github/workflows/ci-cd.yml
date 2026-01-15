@@ -33,6 +33,13 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:latest
 
+    - name: Build and push web-ui
+      uses: docker/build-push-action@v5
+      with:
+        context: ./menu-service
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:latest
+
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
 

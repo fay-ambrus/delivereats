@@ -1,7 +1,7 @@
 const { restaurants } = require('./restaurants');
 
 const menuItems = new Map();
-let menuItemIdCounter = 0;
+let menuItemIdCounter = 1;
 
 const menuItemSchema = {
   type: 'object',

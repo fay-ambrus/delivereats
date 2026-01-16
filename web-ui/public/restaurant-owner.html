@@ -11,24 +11,61 @@
     <h1>Restaurant Management</h1>
 
     <div v-if="!selectedRestaurant">
-      <h2>Select Restaurant</h2>
+      <h2>Select restaurant</h2>
       <select v-model="selectedRestaurantId">
         <option value="">-- Choose a restaurant --</option>
-        <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+        <option v-for="restaurant in restaurants" :value="restaurant.id">
           {{ restaurant.name }}
         </option>
       </select>
+      <p>{{ selectedRestaurantId }}</p>
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">Continue</button>
 
-      <h3>Add New Restaurant</h3>
+      <h2>Create new restaurant</h2>
       <input v-model="newRestaurantName" placeholder="Restaurant name">
       <button @click="addRestaurant" :disabled="!newRestaurantName">Add</button>
     </div>
 
     <div v-else>
       <h2>{{ selectedRestaurant.name }}</h2>
-      <button @click="selectedRestaurant = null">Back to list</button>
-      <p>More options coming soon...</p>
+
+      <h3>Menu Items</h3>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price (HUF)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in menuItems" :key="item.id">
+            <template v-if="editingItem && editingItem.id === item.id">
+              <td><input v-model="editingItem.name"></td>
+              <td><input v-model="editingItem.priceHUF" type="number"></td>
+              <td>
+                <button @click="saveItem">Save</button>
+                <button @click="cancelEdit">Cancel</button>
+              </td>
+            </template>
+            <template v-else>
+              <td>{{ item.name }}</td>
+              <td>{{ item.priceHUF }}</td>
+              <td>
+                <button @click="editItem(item)">Edit</button>
+                <button @click="deleteItem(item.id)">Delete</button>
+              </td>
+            </template>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Add New Item</h4>
+      <input v-model="newItem.name" placeholder="Item name">
+      <input v-model="newItem.priceHUF" type="number" placeholder="Price (HUF)">
+      <button @click="addMenuItem">Add Item</button>
+
+      <button @click="selectedRestaurant = null">Back to restaurant selector</button>
     </div>
   </div>
 

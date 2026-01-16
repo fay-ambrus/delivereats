@@ -14,10 +14,11 @@
       <h2>Select Restaurant</h2>
       <select v-model="selectedRestaurantId">
         <option value="">-- Choose a restaurant --</option>
-        <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+        <option v-for="restaurant in restaurants" :value="restaurant.id">
           {{ restaurant.name }}
         </option>
       </select>
+      <p>{{ selectedRestaurantId }}</p>
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">Continue</button>
 
       <h3>Add New Restaurant</h3>

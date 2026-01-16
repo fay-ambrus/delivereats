@@ -13,6 +13,7 @@ createApp({
       const response = await fetch('/api/menu/restaurants');
       this.restaurants = await response.json();
     },
+
     async addRestaurant() {
       if (!this.newRestaurantName) return;
       const response = await fetch('/api/menu/restaurants', {
@@ -22,8 +23,10 @@ createApp({
       });
       const restaurant = await response.json();
       this.restaurants.push(restaurant);
+      selectedRestaurantId = restaurant.id;
       this.newRestaurantName = '';
     },
+
     selectRestaurant() {
       this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
     }

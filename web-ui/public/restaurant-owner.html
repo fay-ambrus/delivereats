@@ -3,12 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeliverEats</title>
+  <title>Restaurant Owner - DeliverEats</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
   <div id="app">
-    <h1>DeliverEats - Restaurant owner</h1>
-    <p>Restaurant owner</p>
+    <h1>Restaurant Management</h1>
+
+    <div v-if="!selectedRestaurant">
+      <h2>Select Restaurant</h2>
+      <select v-model="selectedRestaurantId">
+        <option value="">-- Choose a restaurant --</option>
+        <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+          {{ restaurant.name }}
+        </option>
+      </select>
+      <button @click="selectRestaurant" :disabled="!selectedRestaurantId">Continue</button>
+
+      <h3>Add New Restaurant</h3>
+      <input v-model="newRestaurantName" placeholder="Restaurant name">
+      <button @click="addRestaurant" :disabled="!newRestaurantName">Add</button>
+    </div>
+
+    <div v-else>
+      <h2>{{ selectedRestaurant.name }}</h2>
+      <button @click="selectedRestaurant = null">Back to list</button>
+      <p>More options coming soon...</p>
+    </div>
   </div>
+
+  <script src="restaurant-owner.js"></script>
 </body>
 </html>

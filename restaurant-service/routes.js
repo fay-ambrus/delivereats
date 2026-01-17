@@ -1,5 +1,5 @@
 const restaurants = new Map();
-let restaurantIdCounter = 0;
+let restaurantIdCounter = 1;
 
 const restaurantSchema = {
   type: 'object',

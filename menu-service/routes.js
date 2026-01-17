@@ -1,15 +1,13 @@
-const { restaurants } = require('./restaurants');
-
 const menuItems = new Map();
 let menuItemIdCounter = 1;
 
 const menuItemSchema = {
   type: 'object',
   properties: {
-    id: { type: 'number' },
+    id: { type: 'integer' },
     name: { type: 'string' },
-    restaurantId: { type: 'number' },
-    priceHUF: { type: 'number' }
+    restaurantId: { type: 'integer' },
+    priceHUF: { type: 'integer' }
   }
 };
 
@@ -30,8 +28,8 @@ module.exports = async function (fastify, opts) {
         required: ['name', 'restaurantId', 'priceHUF'],
         properties: {
           name: { type: 'string' },
-          restaurantId: { type: 'number' },
-          priceHUF: { type: 'number' }
+          restaurantId: { type: 'integer' },
+          priceHUF: { type: 'integer' }
         }
       },
       response: {
@@ -107,8 +105,8 @@ module.exports = async function (fastify, opts) {
         required: ['name', 'restaurantId', 'priceHUF'],
         properties: {
           name: { type: 'string' },
-          restaurantId: { type: 'number' },
-          priceHUF: { type: 'number' }
+          restaurantId: { type: 'integer' },
+          priceHUF: { type: 'integer' }
         }
       },
       response: {
@@ -182,10 +180,7 @@ module.exports = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const restaurantId = parseInt(request.params.id);
-      if (!restaurants.has(restaurantId)) {
-        reply.code(404).send({ error: 'Restaurant not found' });
-        return;
-      }
+      // TODO: check if restaurant exists
       const items = Array.from(menuItems.values()).filter(item => item.restaurantId === restaurantId);
       reply.code(200).send(items);
     }

@@ -4,7 +4,7 @@ let userIdCounter = 0;
 const userSchema = {
   type: 'object',
   properties: {
-    id: { type: 'number' },
+    id: { type: 'integer' },
     name: { type: 'string' }
   }
 };

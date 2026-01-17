@@ -68,6 +68,22 @@
       <input v-model="newItem.name" placeholder="Item name">
       <input v-model="newItem.priceHUF" type="number" placeholder="Price (HUF)">
       <button @click="addMenuItem">Add Item</button><br><br>
+
+      <h3>Incoming orders</h3>
+      <div v-if="restaurantOrders.length === 0">
+        <p>No orders yet</p>
+      </div>
+      <div v-else>
+        <div v-for="order in restaurantOrders" :key="order.id">
+          <h4>Order #{{ order.id }} - {{ order.status }}</h4>
+          <ul>
+            <li v-for="item in order.items" :key="item.menuItemId">
+              {{ getMenuItemName(item.menuItemId) }} x {{ item.quantity }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <button @click="selectedRestaurant = null">Back to restaurant selector</button>
     </div>
   </div>

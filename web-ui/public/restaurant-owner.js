@@ -9,7 +9,8 @@ createApp({
       menuItems: [],
       editingItem: null,
       newItem: { name: '', priceHUF: '' },
-      restaurantCategory: ''
+      restaurantCategory: '',
+      restaurantOrders: []
     }
   },
   methods: {
@@ -22,6 +23,7 @@ createApp({
       this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
       this.restaurantCategory = this.selectedRestaurant.category || '';
       await this.fetchMenuItems();
+      await this.fetchRestaurantOrders();
     },
 
     async addRestaurant() {
@@ -102,6 +104,16 @@ createApp({
       await fetch(`/api/menu/menu-items/${id}`, { method: 'DELETE' });
       this.menuItems = this.menuItems.filter(i => i.id !== id);
     },
+
+    async fetchRestaurantOrders() {
+      const response = await fetch(`/api/order/orders?restaurantId=${this.selectedRestaurant.id}`);
+      this.restaurantOrders = await response.json();
+    },
+
+    getMenuItemName(menuItemId) {
+      const item = this.menuItems.find(i => i.id === menuItemId);
+      return item ? item.name : 'Unknown';
+    }
   },
 
   mounted() {

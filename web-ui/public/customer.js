@@ -10,7 +10,10 @@ createApp({
       selectedRestaurant: null,
       selectedRestaurantId: '',
       menuItems: [],
-      cart: {}
+      cart: {},
+      viewMode: 'restaurants',
+      userOrders: [],
+      allMenuItems: []
     }
   },
   methods: {
@@ -21,6 +24,8 @@ createApp({
 
     selectUser() {
       this.selectedUser = this.users.find(u => u.id === parseInt(this.selectedUserId));
+      this.viewMode = 'restaurants';
+      this.loadUserOrders();
     },
 
     async addUser() {
@@ -70,6 +75,29 @@ createApp({
       this.cart = {};
     },
 
+    async viewOrders() {
+      this.viewMode = 'orders';
+      await this.loadUserOrders();
+    },
+
+    async loadUserOrders() {
+      const response = await fetch(`/api/order/orders?customerId=${this.selectedUser.id}`);
+      this.userOrders = await response.json();
+      
+      const menuResponse = await fetch('/api/menu/menu-items');
+      this.allMenuItems = await menuResponse.json();
+    },
+
+    getRestaurantName(restaurantId) {
+      const restaurant = this.restaurants.find(r => r.id === restaurantId);
+      return restaurant ? restaurant.name : 'Unknown';
+    },
+
+    getMenuItemName(menuItemId) {
+      const item = this.allMenuItems.find(i => i.id === menuItemId);
+      return item ? item.name : 'Unknown';
+    },
+
     async submitOrder() {
       const items = Object.entries(this.cart)
         .filter(([itemId, quantity]) => quantity > 0)
@@ -77,7 +105,7 @@ createApp({
           menuItemId: parseInt(itemId),
           quantity: quantity
         }));
-      
+
       if (items.length === 0) return;
 
       const response = await fetch('/api/order/orders', {
@@ -89,10 +117,11 @@ createApp({
           items: items
         })
       });
-      
+
       const order = await response.json();
       alert(`Order placed successfully! Order ID: ${order.id}`);
       this.cart = {};
+      this.backToRestaurants();
     }
   },
   computed: {

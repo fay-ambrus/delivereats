@@ -37,11 +37,21 @@
         </option>
       </select>
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">View Menu</button>
+
+      <h3>Your Orders</h3>
+      <div v-if="userOrders.length === 0">
+        <p>No orders placed yet</p>
+      </div>
+      <div v-else>
+        <div v-for="order in userOrders" :key="order.id">
+          <strong>Order #{{ order.id }}</strong> - {{ order.status }} - {{ getRestaurantName(order.restaurantId) }}
+        </div>
+      </div>
     </div>
 
     <div v-else>
       <h2>{{ selectedRestaurant.name }}</h2>
-      <p v-if="selectedRestaurant.category"><em>{{ selectedRestaurant.category }}</em></p>
+      <p v-if="selectedRestaurant.category"><em>Category: {{ selectedRestaurant.category }}</em></p>
       <button @click="backToRestaurants">Back to restaurants</button>
 
       <h3>Menu</h3>

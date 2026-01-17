@@ -70,6 +70,13 @@ module.exports = async function (fastify, opts) {
     method: 'GET',
     url: '/orders',
     schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          customerId: { type: 'string' },
+          restaurantId: { type: 'string' }
+        }
+      },
       response: {
         200: {
           type: 'array',
@@ -78,7 +85,15 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const allOrders = Array.from(orders.values());
+      let allOrders = Array.from(orders.values());
+      if (request.query.customerId) {
+        const customerId = parseInt(request.query.customerId);
+        allOrders = allOrders.filter(o => o.customerId === customerId);
+      }
+      if (request.query.restaurantId) {
+        const restaurantId = parseInt(request.query.restaurantId);
+        allOrders = allOrders.filter(o => o.restaurantId === restaurantId);
+      }
       reply.code(200).send(allOrders);
     }
   });

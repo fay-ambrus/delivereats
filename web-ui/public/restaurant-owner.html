@@ -46,7 +46,7 @@
           <tr v-for="item in menuItems" :key="item.id">
             <template v-if="editingItem && editingItem.id === item.id">
               <td><input v-model="editingItem.name"></td>
-              <td><input v-model="editingItem.priceHUF" type="number"></td>
+              <td><input v-model="editingItem.priceHUF" type="integer"></td>
               <td>
                 <button @click="saveItem">Save</button>
                 <button @click="cancelEdit">Cancel</button>
@@ -67,8 +67,7 @@
       <h4>Add New Item</h4>
       <input v-model="newItem.name" placeholder="Item name">
       <input v-model="newItem.priceHUF" type="number" placeholder="Price (HUF)">
-      <button @click="addMenuItem">Add Item</button>
-      <br>
+      <button @click="addMenuItem">Add Item</button><br><br>
       <button @click="selectedRestaurant = null">Back to restaurant selector</button>
     </div>
   </div>

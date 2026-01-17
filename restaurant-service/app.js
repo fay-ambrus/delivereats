@@ -7,7 +7,7 @@ fastify.setErrorHandler((error, request, reply) => {
 });
 
 // Register routes
-fastify.register(require('./routes'), { prefix: '/api/menu' });
+fastify.register(require('./routes'), { prefix: '/api/restaurant' });
 
 fastify.listen({ port: 3000, host: '0.0.0.0' }, (err) => {
   if (err) {

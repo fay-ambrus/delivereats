@@ -4,7 +4,7 @@ let restaurantIdCounter = 0;
 const restaurantSchema = {
   type: 'object',
   properties: {
-    id: { type: 'number' },
+    id: { type: 'integer' },
     name: { type: 'string' },
     category: { type: 'string' }
   }

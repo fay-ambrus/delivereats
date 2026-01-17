@@ -1,19 +1,33 @@
 const orders = new Map();
 let orderIdCounter = 0;
 
+const orderItemSchema = {
+  type: 'object',
+  required: ['menuItemId', 'quantity'],
+  properties: {
+    menuItemId: { type: 'integer' },
+    quantity: { type: 'integer' }
+  }
+};
+
 const orderSchema = {
   type: 'object',
+  required: ['id', 'customerId', 'restaurantId', 'items', 'status'],
   properties: {
-    id: { type: 'number' },
-    customerId: { type: 'number' },
-    restaurantId: { type: 'number' },
-    items: { type: 'array' },
+    id: { type: 'integer' },
+    customerId: { type: 'integer' },
+    restaurantId: { type: 'integer' },
+    items: {
+      type: 'array',
+      items: orderItemSchema
+    },
     status: { type: 'string' }
   }
 };
 
 const errorSchema = {
   type: 'object',
+  required: ['error'],
   properties: {
     error: { type: 'string' }
   }
@@ -28,9 +42,12 @@ module.exports = async function (fastify, opts) {
         type: 'object',
         required: ['customerId', 'restaurantId', 'items'],
         properties: {
-          customerId: { type: 'number' },
-          restaurantId: { type: 'number' },
-          items: { type: 'array' }
+          customerId: { type: 'integer' },
+          restaurantId: { type: 'integer' },
+          items: {
+            type: 'array',
+            items: orderItemSchema
+          }
         }
       },
       response: {
@@ -104,13 +121,11 @@ module.exports = async function (fastify, opts) {
       },
       body: {
         type: 'object',
-        required: ['customerId', 'restaurantId', 'items', 'status'],
+        required: ['status'],
         properties: {
-          customerId: { type: 'number' },
-          restaurantId: { type: 'number' },
-          items: { type: 'array' },
           status: { type: 'string' }
-        }
+        },
+        additionalProperties: false
       },
       response: {
         200: orderSchema,
@@ -119,13 +134,14 @@ module.exports = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const id = parseInt(request.params.id);
-      if (!orders.has(id)) {
+      const existingOrder = orders.get(id);
+      if (!existingOrder) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
       const order = {
-        id: id,
-        ...request.body
+        ...existingOrder,
+        status: request.body.status
       };
       orders.set(id, order);
       reply.code(200).send(order);
@@ -145,6 +161,7 @@ module.exports = async function (fastify, opts) {
       response: {
         200: {
           type: 'object',
+          required: ['success'],
           properties: {
             success: { type: 'boolean' }
           }

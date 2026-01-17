@@ -14,7 +14,7 @@
       <h2>Select user</h2>
       <select v-model="selectedUserId">
         <option value="">-- Choose a user --</option>
-        <option v-for="user in users" :key="user.id" :value="user.id">
+        <option v-for="user in users" :value="user.id">
           {{ user.name }}
         </option>
       </select>
@@ -33,7 +33,7 @@
       <select v-model="selectedRestaurantId">
         <option value="">-- Choose a restaurant --</option>
         <option v-for="restaurant in restaurants" :value="restaurant.id">
-          {{ restaurant.name }}
+          {{ restaurant.name }} <span v-if="restaurant.category">({{ restaurant.category }})</span>
         </option>
       </select>
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">View Menu</button>
@@ -42,14 +42,14 @@
     <div v-else>
       <h2>{{ selectedRestaurant.name }}</h2>
       <p v-if="selectedRestaurant.category"><em>{{ selectedRestaurant.category }}</em></p>
-      <button @click="selectedRestaurant = null">Back to restaurants</button>
+      <button @click="backToRestaurants">Back to restaurants</button>
 
       <h3>Menu</h3>
       <table border="1">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Price (HUF)</th>
+            <th>Price</th>
             <th>Quantity</th>
             <th>Actions</th>
           </tr>
@@ -57,9 +57,9 @@
         <tbody>
           <tr v-for="item in menuItems" :key="item.id">
             <td>{{ item.name }}</td>
-            <td>{{ item.priceHUF }}</td>
+            <td>{{ item.priceHUF }} Ft</td>
             <td>
-              <input v-model.number="cart[item.id]" type="number" min="0" style="width: 60px">
+              <input v-model.number="cart[item.id]" type="integer" min="1" placeholder="1" style="width: 60px">
             </td>
             <td>
               <button @click="addToCart(item.id)">Add</button>
@@ -73,10 +73,11 @@
       <div v-if="cartItems.length > 0">
         <ul>
           <li v-for="cartItem in cartItems" :key="cartItem.id">
-            {{ cartItem.name }} x {{ cartItem.quantity }} = {{ cartItem.total }} HUF
+            {{ cartItem.name }} x {{ cartItem.quantity }} = {{ cartItem.total }} Ft
           </li>
         </ul>
-        <p><strong>Total: {{ cartTotal }} HUF</strong></p>
+        <p><strong>Total: {{ cartTotal }} Ft</strong></p>
+        <button @click="submitOrder">Place Order</button>
         <button @click="resetCart">Reset cart</button>
       </div>
       <p v-else>Your cart is empty</p>

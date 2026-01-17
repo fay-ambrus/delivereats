@@ -1,9 +1,6 @@
-import { createApp, ref } from 'vue';
-
+const { createApp } = Vue;
 createApp({
-  setup() {
-    return {
-      count: ref(0)
-    }
+  data() {
+    return {}
   }
 }).mount('#app');

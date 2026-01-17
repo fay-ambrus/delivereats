@@ -14,13 +14,19 @@ createApp({
   },
   methods: {
     async fetchRestaurants() {
-      const response = await fetch('/api/menu/restaurants');
+      const response = await fetch('/api/restaurant/restaurants');
       this.restaurants = await response.json();
+    },
+
+    async selectRestaurant() {
+      this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
+      this.restaurantCategory = this.selectedRestaurant.category || '';
+      await this.fetchMenuItems();
     },
 
     async addRestaurant() {
       if (!this.newRestaurantName) return;
-      const response = await fetch('/api/menu/restaurants', {
+      const response = await fetch('/api/restaurant/restaurants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: this.newRestaurantName })
@@ -32,10 +38,19 @@ createApp({
       this.newRestaurantName = '';
     },
 
-    async selectRestaurant() {
-      this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
-      this.restaurantCategory = this.selectedRestaurant.category || '';
-      await this.fetchMenuItems();
+    async updateRestaurantCategory() {
+      const response = await fetch(`/api/restaurant/restaurants/${this.selectedRestaurant.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.selectedRestaurant.name,
+          category: this.restaurantCategory
+        })
+      });
+      const updated = await response.json();
+      this.selectedRestaurant = updated;
+      const index = this.restaurants.findIndex(r => r.id === updated.id);
+      this.restaurants[index] = updated;
     },
 
     async fetchMenuItems() {
@@ -50,7 +65,7 @@ createApp({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: this.newItem.name,
-          priceHUF: parseFloat(this.newItem.priceHUF),
+          priceHUF: parseInt(this.newItem.priceHUF),
           restaurantId: this.selectedRestaurant.id
         })
       });
@@ -69,7 +84,7 @@ createApp({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: this.editingItem.name,
-          priceHUF: parseFloat(this.editingItem.priceHUF),
+          priceHUF: parseInt(this.editingItem.priceHUF),
           restaurantId: this.selectedRestaurant.id
         })
       });
@@ -87,22 +102,8 @@ createApp({
       await fetch(`/api/menu/menu-items/${id}`, { method: 'DELETE' });
       this.menuItems = this.menuItems.filter(i => i.id !== id);
     },
-
-    async updateRestaurantCategory() {
-      const response = await fetch(`/api/menu/restaurants/${this.selectedRestaurant.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: this.selectedRestaurant.name,
-          category: this.restaurantCategory
-        })
-      });
-      const updated = await response.json();
-      this.selectedRestaurant = updated;
-      const index = this.restaurants.findIndex(r => r.id === updated.id);
-      this.restaurants[index] = updated;
-    }
   },
+
   mounted() {
     this.fetchRestaurants();
   }

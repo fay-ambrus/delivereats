@@ -7,6 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}
+  SERVICES: web-ui menu-service order-service restaurant-service
 
 jobs:
   build-and-deploy:
@@ -26,26 +27,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push web-ui
-      uses: docker/build-push-action@v5
-      with:
-        context: ./web-ui
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/web-ui:latest
-
-    - name: Build and push menu-service
-      uses: docker/build-push-action@v5
-      with:
-        context: ./menu-service
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:latest
-
-    - name: Build and push order-service
-      uses: docker/build-push-action@v5
-      with:
-        context: ./order-service
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:latest
+    - name: Build and push images
+      run: |
+        for service in ${{ env.SERVICES }}; do
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:${{ github.sha }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:latest ./$service
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:latest
+        done
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
@@ -64,11 +52,11 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        for service in web-ui menu-service order-service; do
+        for service in ${{ env.SERVICES }}; do
           sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" $service/k8s-$service.yaml | kubectl apply -f -
         done
         kubectl apply -f k8s-ingress.yaml
-        for service in web-ui menu-service order-service; do
+        for service in ${{ env.SERVICES }}; do
           kubectl rollout status deployment/$service --timeout=2m
         done
         kubectl get pods,svc,ingress

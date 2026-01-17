@@ -4,9 +4,9 @@ let menuItemIdCounter = 1;
 const menuItemSchema = {
   type: 'object',
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     name: { type: 'string' },
-    restaurantId: { type: 'integer' },
+    restaurantId: { type: 'string' },
     priceHUF: { type: 'integer' }
   }
 };
@@ -28,7 +28,7 @@ module.exports = async function (fastify, opts) {
         required: ['name', 'restaurantId', 'priceHUF'],
         properties: {
           name: { type: 'string' },
-          restaurantId: { type: 'integer' },
+          restaurantId: { type: 'string' },
           priceHUF: { type: 'integer' }
         }
       },
@@ -105,7 +105,7 @@ module.exports = async function (fastify, opts) {
         required: ['name', 'restaurantId', 'priceHUF'],
         properties: {
           name: { type: 'string' },
-          restaurantId: { type: 'integer' },
+          restaurantId: { type: 'string' },
           priceHUF: { type: 'integer' }
         }
       },

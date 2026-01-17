@@ -1,10 +1,11 @@
+const { randomUUID } = require('crypto');
+
 const users = new Map();
-let userIdCounter = 0;
 
 const userSchema = {
   type: 'object',
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     name: { type: 'string' }
   }
 };
@@ -33,7 +34,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = userIdCounter++;
+      const id = randomUUID();
       const user = {
         id: id,
         ...request.body
@@ -76,8 +77,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      const user = users.get(id);
+      const user = users.get(request.params.id);
       if (!user) {
         reply.code(404).send({ error: 'User not found' });
         return;

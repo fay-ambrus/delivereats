@@ -23,7 +23,7 @@ createApp({
     },
 
     selectUser() {
-      this.selectedUser = this.users.find(u => u.id === parseInt(this.selectedUserId));
+      this.selectedUser = this.users.find(u => u.id === this.selectedUserId);
       this.viewMode = 'restaurants';
       this.loadUserOrders();
     },
@@ -102,7 +102,7 @@ createApp({
       const items = Object.entries(this.cart)
         .filter(([itemId, quantity]) => quantity > 0)
         .map(([itemId, quantity]) => ({
-          menuItemId: parseInt(itemId),
+          menuItemId: itemId,
           quantity: quantity
         }));
 

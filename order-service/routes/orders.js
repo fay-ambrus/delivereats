@@ -1,11 +1,12 @@
+const { randomUUID } = require('crypto');
+
 const orders = new Map();
-let orderIdCounter = 1;
 
 const orderItemSchema = {
   type: 'object',
   required: ['menuItemId', 'quantity'],
   properties: {
-    menuItemId: { type: 'integer' },
+    menuItemId: { type: 'string' },
     quantity: { type: 'integer' }
   }
 };
@@ -14,9 +15,9 @@ const orderSchema = {
   type: 'object',
   required: ['id', 'customerId', 'restaurantId', 'items', 'status'],
   properties: {
-    id: { type: 'integer' },
-    customerId: { type: 'integer' },
-    restaurantId: { type: 'integer' },
+    id: { type: 'string' },
+    customerId: { type: 'string' },
+    restaurantId: { type: 'string' },
     items: {
       type: 'array',
       items: orderItemSchema
@@ -42,8 +43,8 @@ module.exports = async function (fastify, opts) {
         type: 'object',
         required: ['customerId', 'restaurantId', 'items'],
         properties: {
-          customerId: { type: 'integer' },
-          restaurantId: { type: 'integer' },
+          customerId: { type: 'string' },
+          restaurantId: { type: 'string' },
           items: {
             type: 'array',
             items: orderItemSchema
@@ -55,7 +56,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = orderIdCounter++;
+      const id = randomUUID();
       const order = {
         id: id,
         ...request.body,
@@ -87,12 +88,10 @@ module.exports = async function (fastify, opts) {
     handler: async (request, reply) => {
       let allOrders = Array.from(orders.values());
       if (request.query.customerId) {
-        const customerId = parseInt(request.query.customerId);
-        allOrders = allOrders.filter(o => o.customerId === customerId);
+        allOrders = allOrders.filter(o => o.customerId === request.query.customerId);
       }
       if (request.query.restaurantId) {
-        const restaurantId = parseInt(request.query.restaurantId);
-        allOrders = allOrders.filter(o => o.restaurantId === restaurantId);
+        allOrders = allOrders.filter(o => o.restaurantId === request.query.restaurantId);
       }
       reply.code(200).send(allOrders);
     }
@@ -114,8 +113,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      const order = orders.get(id);
+      const order = orders.get(request.params.id);
       if (!order) {
         reply.code(404).send({ error: 'Order not found' });
         return;
@@ -148,8 +146,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      const existingOrder = orders.get(id);
+      const existingOrder = orders.get(request.params.id);
       if (!existingOrder) {
         reply.code(404).send({ error: 'Order not found' });
         return;
@@ -158,7 +155,7 @@ module.exports = async function (fastify, opts) {
         ...existingOrder,
         status: request.body.status
       };
-      orders.set(id, order);
+      orders.set(request.params.id, order);
       reply.code(200).send(order);
     }
   });
@@ -185,12 +182,11 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      if (!orders.has(id)) {
+      if (!orders.has(request.params.id)) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      orders.delete(id);
+      orders.delete(request.params.id);
       reply.code(200).send({ success: true });
     }
   });

@@ -1,5 +1,6 @@
+const { randomUUID } = require('crypto');
+
 const menuItems = new Map();
-let menuItemIdCounter = 1;
 
 const menuItemSchema = {
   type: 'object',
@@ -37,7 +38,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = menuItemIdCounter++;
+      const id = randomUUID();
       const menuItem = {
         id: id,
         ...request.body
@@ -80,8 +81,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      const menuItem = menuItems.get(id);
+      const menuItem = menuItems.get(request.params.id);
       if (!menuItem) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
@@ -115,16 +115,15 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      if (!menuItems.has(id)) {
+      if (!menuItems.has(request.params.id)) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
       }
       const menuItem = {
-        id: id,
+        id: request.params.id,
         ...request.body
       };
-      menuItems.set(id, menuItem);
+      menuItems.set(request.params.id, menuItem);
       reply.code(200).send(menuItem);
     }
   });
@@ -150,12 +149,11 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      if (!menuItems.has(id)) {
+      if (!menuItems.has(request.params.id)) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
       }
-      menuItems.delete(id);
+      menuItems.delete(request.params.id);
       reply.code(200).send({ success: true });
     }
   });
@@ -179,9 +177,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const restaurantId = parseInt(request.params.id);
-      // TODO: check if restaurant exists
-      const items = Array.from(menuItems.values()).filter(item => item.restaurantId === restaurantId);
+      const items = Array.from(menuItems.values()).filter(item => item.restaurantId === request.params.id);
       reply.code(200).send(items);
     }
   });

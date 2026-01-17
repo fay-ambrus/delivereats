@@ -18,7 +18,6 @@
           {{ restaurant.name }}
         </option>
       </select>
-      <p>{{ selectedRestaurantId }}</p>
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">Continue</button>
 
       <h2>Create new restaurant</h2>
@@ -28,6 +27,11 @@
 
     <div v-else>
       <h2>{{ selectedRestaurant.name }}</h2>
+
+      <h3>Restaurant details</h3>
+      <label>Category:</label><br>
+      <input v-model="restaurantCategory" placeholder="Restaurant category"><br>
+      <button @click="updateRestaurantCategory">Save category</button>
 
       <h3>Menu Items</h3>
       <table border="1">
@@ -64,7 +68,7 @@
       <input v-model="newItem.name" placeholder="Item name">
       <input v-model="newItem.priceHUF" type="number" placeholder="Price (HUF)">
       <button @click="addMenuItem">Add Item</button>
-
+      <br>
       <button @click="selectedRestaurant = null">Back to restaurant selector</button>
     </div>
   </div>

@@ -40,6 +40,13 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/menu-service:latest
 
+    - name: Build and push order-service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./order-service
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:latest
+
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
 
@@ -57,9 +64,11 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" web-ui/k8s-web-ui.yaml | kubectl apply -f -
-        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" menu-service/k8s-menu-service.yaml | kubectl apply -f -
+        for service in web-ui menu-service order-service; do
+          sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" $service/k8s-$service.yaml | kubectl apply -f -
+        done
         kubectl apply -f k8s-ingress.yaml
-        kubectl rollout status deployment/web-ui --timeout=2m
-        kubectl rollout status deployment/menu-service --timeout=2m
+        for service in web-ui menu-service order-service; do
+          kubectl rollout status deployment/$service --timeout=2m
+        done
         kubectl get pods,svc,ingress

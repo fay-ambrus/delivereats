@@ -3,12 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeliverEats</title>
+  <title>Customer - DeliverEats</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
   <div id="app">
-    <h1>DeliverEats - Customer</h1>
-    <p>Customer site</p>
+    <h1>Order some food!</h1>
+
+    <div v-if="!selectedUser">
+      <h2>Select user</h2>
+      <select v-model="selectedUserId">
+        <option value="">-- Choose a user --</option>
+        <option v-for="user in users" :key="user.id" :value="user.id">
+          {{ user.name }}
+        </option>
+      </select>
+      <button @click="selectUser" :disabled="!selectedUserId">Continue</button>
+
+      <h3>Add new user</h3>
+      <input v-model="newUserName" placeholder="Your name">
+      <button @click="addUser" :disabled="!newUserName">Add</button>
+    </div>
+
+    <div v-else-if="!selectedRestaurant">
+      <h2>Welcome, {{ selectedUser.name }}!</h2>
+      <button @click="selectedUser = null">Change user</button>
+
+      <h3>Select restaurant</h3>
+      <select v-model="selectedRestaurantId">
+        <option value="">-- Choose a restaurant --</option>
+        <option v-for="restaurant in restaurants" :value="restaurant.id">
+          {{ restaurant.name }}
+        </option>
+      </select>
+      <button @click="selectRestaurant" :disabled="!selectedRestaurantId">View Menu</button>
+    </div>
+
+    <div v-else>
+      <h2>{{ selectedRestaurant.name }}</h2>
+      <p v-if="selectedRestaurant.category"><em>{{ selectedRestaurant.category }}</em></p>
+      <button @click="selectedRestaurant = null">Back to restaurants</button>
+
+      <h3>Menu</h3>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price (HUF)</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in menuItems" :key="item.id">
+            <td>{{ item.name }}</td>
+            <td>{{ item.priceHUF }}</td>
+            <td>
+              <input v-model.number="cart[item.id]" type="number" min="0" style="width: 60px">
+            </td>
+            <td>
+              <button @click="addToCart(item.id)">Add</button>
+              <button @click="removeFromCart(item.id)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Cart</h3>
+      <div v-if="cartItems.length > 0">
+        <ul>
+          <li v-for="cartItem in cartItems" :key="cartItem.id">
+            {{ cartItem.name }} x {{ cartItem.quantity }} = {{ cartItem.total }} HUF
+          </li>
+        </ul>
+        <p><strong>Total: {{ cartTotal }} HUF</strong></p>
+        <button @click="resetCart">Reset cart</button>
+      </div>
+      <p v-else>Your cart is empty</p>
+    </div>
   </div>
+
+  <script src="customer.js"></script>
 </body>
 </html>

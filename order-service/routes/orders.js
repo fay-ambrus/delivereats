@@ -1,12 +1,14 @@
-const restaurants = new Map();
-let restaurantIdCounter = 0;
+const orders = new Map();
+let orderIdCounter = 0;
 
-const restaurantSchema = {
+const orderSchema = {
   type: 'object',
   properties: {
     id: { type: 'number' },
-    name: { type: 'string' },
-    category: { type: 'string' }
+    customerId: { type: 'number' },
+    restaurantId: { type: 'number' },
+    items: { type: 'array' },
+    status: { type: 'string' }
   }
 };
 
@@ -20,51 +22,53 @@ const errorSchema = {
 module.exports = async function (fastify, opts) {
   fastify.route({
     method: 'POST',
-    url: '/restaurants',
+    url: '/orders',
     schema: {
       body: {
         type: 'object',
-        required: ['name'],
+        required: ['customerId', 'restaurantId', 'items'],
         properties: {
-          name: { type: 'string' },
-          category: { type: 'string' }
+          customerId: { type: 'number' },
+          restaurantId: { type: 'number' },
+          items: { type: 'array' }
         }
       },
       response: {
-        201: restaurantSchema
+        201: orderSchema
       }
     },
     handler: async (request, reply) => {
-      const id = restaurantIdCounter++;
-      const restaurant = {
+      const id = orderIdCounter++;
+      const order = {
         id: id,
-        ...request.body
+        ...request.body,
+        status: 'pending'
       };
-      restaurants.set(id, restaurant);
-      reply.code(201).send(restaurant);
+      orders.set(id, order);
+      reply.code(201).send(order);
     }
   });
 
   fastify.route({
     method: 'GET',
-    url: '/restaurants',
+    url: '/orders',
     schema: {
       response: {
         200: {
           type: 'array',
-          items: restaurantSchema
+          items: orderSchema
         }
       }
     },
     handler: async (request, reply) => {
-      const allRestaurants = Array.from(restaurants.values());
-      reply.code(200).send(allRestaurants);
+      const allOrders = Array.from(orders.values());
+      reply.code(200).send(allOrders);
     }
   });
 
   fastify.route({
     method: 'GET',
-    url: '/restaurants/:id',
+    url: '/orders/:id',
     schema: {
       params: {
         type: 'object',
@@ -73,24 +77,24 @@ module.exports = async function (fastify, opts) {
         }
       },
       response: {
-        200: restaurantSchema,
+        200: orderSchema,
         404: errorSchema
       }
     },
     handler: async (request, reply) => {
       const id = parseInt(request.params.id);
-      const restaurant = restaurants.get(id);
-      if (!restaurant) {
-        reply.code(404).send({ error: 'Restaurant not found' });
+      const order = orders.get(id);
+      if (!order) {
+        reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      reply.code(200).send(restaurant);
+      reply.code(200).send(order);
     }
   });
 
   fastify.route({
     method: 'PUT',
-    url: '/restaurants/:id',
+    url: '/orders/:id',
     schema: {
       params: {
         type: 'object',
@@ -100,35 +104,37 @@ module.exports = async function (fastify, opts) {
       },
       body: {
         type: 'object',
-        required: ['name'],
+        required: ['customerId', 'restaurantId', 'items', 'status'],
         properties: {
-          name: { type: 'string' },
-          category: { type: 'string' }
+          customerId: { type: 'number' },
+          restaurantId: { type: 'number' },
+          items: { type: 'array' },
+          status: { type: 'string' }
         }
       },
       response: {
-        200: restaurantSchema,
+        200: orderSchema,
         404: errorSchema
       }
     },
     handler: async (request, reply) => {
       const id = parseInt(request.params.id);
-      if (!restaurants.has(id)) {
-        reply.code(404).send({ error: 'Restaurant not found' });
+      if (!orders.has(id)) {
+        reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      const restaurant = {
+      const order = {
         id: id,
         ...request.body
       };
-      restaurants.set(id, restaurant);
-      reply.code(200).send(restaurant);
+      orders.set(id, order);
+      reply.code(200).send(order);
     }
   });
 
   fastify.route({
     method: 'DELETE',
-    url: '/restaurants/:id',
+    url: '/orders/:id',
     schema: {
       params: {
         type: 'object',
@@ -148,14 +154,12 @@ module.exports = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const id = parseInt(request.params.id);
-      if (!restaurants.has(id)) {
-        reply.code(404).send({ error: 'Restaurant not found' });
+      if (!orders.has(id)) {
+        reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      restaurants.delete(id);
+      orders.delete(id);
       reply.code(200).send({ success: true });
     }
   });
 };
-
-module.exports.restaurants = restaurants;

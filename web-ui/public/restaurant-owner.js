@@ -8,7 +8,8 @@ createApp({
       newRestaurantName: '',
       menuItems: [],
       editingItem: null,
-      newItem: { name: '', priceHUF: '' }
+      newItem: { name: '', priceHUF: '' },
+      restaurantCategory: ''
     }
   },
   methods: {
@@ -33,6 +34,7 @@ createApp({
 
     async selectRestaurant() {
       this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
+      this.restaurantCategory = this.selectedRestaurant.category || '';
       await this.fetchMenuItems();
     },
 
@@ -84,6 +86,21 @@ createApp({
     async deleteItem(id) {
       await fetch(`/api/menu/menu-items/${id}`, { method: 'DELETE' });
       this.menuItems = this.menuItems.filter(i => i.id !== id);
+    },
+
+    async updateRestaurantCategory() {
+      const response = await fetch(`/api/menu/restaurants/${this.selectedRestaurant.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.selectedRestaurant.name,
+          category: this.restaurantCategory
+        })
+      });
+      const updated = await response.json();
+      this.selectedRestaurant = updated;
+      const index = this.restaurants.findIndex(r => r.id === updated.id);
+      this.restaurants[index] = updated;
     }
   },
   mounted() {

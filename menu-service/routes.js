@@ -1,6 +1,5 @@
+const db = require('./db');
 const { randomUUID } = require('crypto');
-
-const menuItems = new Map();
 
 const menuItemSchema = {
   type: 'object',
@@ -38,12 +37,11 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = randomUUID();
       const menuItem = {
-        id: id,
+        id: randomUUID(),
         ...request.body
       };
-      menuItems.set(id, menuItem);
+      await db.createMenuItem(menuItem);
       reply.code(201).send(menuItem);
     }
   });
@@ -60,8 +58,8 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const allMenuItems = Array.from(menuItems.values());
-      reply.code(200).send(allMenuItems);
+      const menuItems = await db.getAllMenuItems();
+      reply.send(menuItems);
     }
   });
 
@@ -81,12 +79,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const menuItem = menuItems.get(request.params.id);
+      const menuItem = await db.getMenuItemById(request.params.id);
       if (!menuItem) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
       }
-      reply.code(200).send(menuItem);
+      reply.send(menuItem);
     }
   });
 
@@ -115,16 +113,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      if (!menuItems.has(request.params.id)) {
+      const menuItem = await db.updateMenuItem(request.params.id, request.body);
+      if (!menuItem) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
       }
-      const menuItem = {
-        id: request.params.id,
-        ...request.body
-      };
-      menuItems.set(request.params.id, menuItem);
-      reply.code(200).send(menuItem);
+      reply.send(menuItem);
     }
   });
 
@@ -149,12 +143,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      if (!menuItems.has(request.params.id)) {
+      const success = await db.deleteMenuItem(request.params.id);
+      if (!success) {
         reply.code(404).send({ error: 'Menu item not found' });
         return;
       }
-      menuItems.delete(request.params.id);
-      reply.code(200).send({ success: true });
+      reply.send({ success: true });
     }
   });
 
@@ -172,13 +166,12 @@ module.exports = async function (fastify, opts) {
         200: {
           type: 'array',
           items: menuItemSchema
-        },
-        404: errorSchema
+        }
       }
     },
     handler: async (request, reply) => {
-      const items = Array.from(menuItems.values()).filter(item => item.restaurantId === request.params.id);
-      reply.code(200).send(items);
+      const items = await db.getMenuItemsByRestaurant(request.params.id);
+      reply.send(items);
     }
   });
 };

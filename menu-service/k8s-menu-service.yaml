@@ -19,6 +19,15 @@ spec:
         image: ghcr.io/IMAGE_OWNER/menu-service:IMAGE_TAG
         ports:
         - containerPort: 3000
+        env:
+        - name: POSTGRES_HOST
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "menu"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
 ---
 apiVersion: v1
 kind: Service

@@ -2,15 +2,14 @@ const { MongoClient } = require('mongodb');
 const { randomUUID } = require('crypto');
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://mongodb:27017';
-const dbName = 'delivereats';
-let db, eventsCollection, restaurantsCollection;
+const dbName = 'restaurants';
+let db, eventsCollection;
 
 async function connect() {
   const client = new MongoClient(mongoUrl);
   await client.connect();
   db = client.db(dbName);
   eventsCollection = db.collection('restaurant_events');
-  restaurantsCollection = db.collection('restaurants');
   console.log('Connected to MongoDB');
 }
 
@@ -41,23 +40,27 @@ async function createRestaurant(name, category) {
   };
 
   await eventsCollection.insertOne(event);
-  const state = await rebuildRestaurantState(restaurantId);
-  await restaurantsCollection.replaceOne({ id: restaurantId }, state, { upsert: true });
-
-  return state;
+  return await rebuildRestaurantState(restaurantId);
 }
 
 async function getAllRestaurants() {
-  const restaurants = await restaurantsCollection.find({}).toArray();
-  return restaurants.map(r => ({ id: r.id, name: r.name, category: r.category }));
+  const allRestaurantIds = await eventsCollection.distinct('restaurantId');
+  const restaurants = [];
+  
+  for (const restaurantId of allRestaurantIds) {
+    const state = await rebuildRestaurantState(restaurantId);
+    if (state) restaurants.push(state);
+  }
+  
+  return restaurants;
 }
 
 async function getRestaurantById(id) {
-  return await restaurantsCollection.findOne({ id });
+  return await rebuildRestaurantState(id);
 }
 
 async function updateRestaurant(id, name, category) {
-  const existing = await restaurantsCollection.findOne({ id });
+  const existing = await rebuildRestaurantState(id);
   if (!existing) return null;
 
   const event = {
@@ -68,14 +71,11 @@ async function updateRestaurant(id, name, category) {
   };
 
   await eventsCollection.insertOne(event);
-  const state = await rebuildRestaurantState(id);
-  await restaurantsCollection.replaceOne({ id }, state);
-
-  return state;
+  return await rebuildRestaurantState(id);
 }
 
 async function deleteRestaurant(id) {
-  const existing = await restaurantsCollection.findOne({ id });
+  const existing = await rebuildRestaurantState(id);
   if (!existing) return false;
 
   const event = {
@@ -86,8 +86,6 @@ async function deleteRestaurant(id) {
   };
 
   await eventsCollection.insertOne(event);
-  await restaurantsCollection.deleteOne({ id });
-
   return true;
 }
 

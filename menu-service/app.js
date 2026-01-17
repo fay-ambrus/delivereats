@@ -1,4 +1,5 @@
 const fastify = require('fastify')({ logger: true });
+const db = require('./db');
 
 // Global error handler
 fastify.setErrorHandler((error, request, reply) => {
@@ -9,9 +10,14 @@ fastify.setErrorHandler((error, request, reply) => {
 // Register routes
 fastify.register(require('./routes'), { prefix: '/api/menu' });
 
-fastify.listen({ port: 3000, host: '0.0.0.0' }, (err) => {
-  if (err) {
+const start = async () => {
+  try {
+    await db.connect();
+    await fastify.listen({ port: 3000, host: '0.0.0.0' });
+  } catch (err) {
     fastify.log.error(err);
     process.exit(1);
   }
-});
+};
+
+start();

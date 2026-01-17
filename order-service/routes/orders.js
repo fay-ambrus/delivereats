@@ -1,6 +1,5 @@
+const db = require('../db');
 const { randomUUID } = require('crypto');
-
-const orders = new Map();
 
 const orderItemSchema = {
   type: 'object',
@@ -56,13 +55,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = randomUUID();
       const order = {
-        id: id,
+        id: randomUUID(),
         ...request.body,
         status: 'pending'
       };
-      orders.set(id, order);
+      await db.createOrder(order);
       reply.code(201).send(order);
     }
   });
@@ -86,14 +84,8 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      let allOrders = Array.from(orders.values());
-      if (request.query.customerId) {
-        allOrders = allOrders.filter(o => o.customerId === request.query.customerId);
-      }
-      if (request.query.restaurantId) {
-        allOrders = allOrders.filter(o => o.restaurantId === request.query.restaurantId);
-      }
-      reply.code(200).send(allOrders);
+      const orders = await db.getAllOrders(request.query.customerId, request.query.restaurantId);
+      reply.send(orders);
     }
   });
 
@@ -113,12 +105,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const order = orders.get(request.params.id);
+      const order = await db.getOrderById(request.params.id);
       if (!order) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      reply.code(200).send(order);
+      reply.send(order);
     }
   });
 
@@ -146,17 +138,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const existingOrder = orders.get(request.params.id);
-      if (!existingOrder) {
+      const order = await db.updateOrderStatus(request.params.id, request.body.status);
+      if (!order) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      const order = {
-        ...existingOrder,
-        status: request.body.status
-      };
-      orders.set(request.params.id, order);
-      reply.code(200).send(order);
+      reply.send(order);
     }
   });
 
@@ -182,12 +169,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      if (!orders.has(request.params.id)) {
+      const success = await db.deleteOrder(request.params.id);
+      if (!success) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
-      orders.delete(request.params.id);
-      reply.code(200).send({ success: true });
+      reply.send({ success: true });
     }
   });
 };

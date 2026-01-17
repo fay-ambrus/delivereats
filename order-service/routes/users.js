@@ -1,6 +1,5 @@
+const usersDb = require('../usersDb');
 const { randomUUID } = require('crypto');
-
-const users = new Map();
 
 const userSchema = {
   type: 'object',
@@ -34,12 +33,11 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = randomUUID();
       const user = {
-        id: id,
+        id: randomUUID(),
         ...request.body
       };
-      users.set(id, user);
+      await usersDb.createUser(user);
       reply.code(201).send(user);
     }
   });
@@ -56,8 +54,8 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const allUsers = Array.from(users.values());
-      reply.code(200).send(allUsers);
+      const users = await usersDb.getAllUsers();
+      reply.send(users);
     }
   });
 
@@ -77,14 +75,12 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const user = users.get(request.params.id);
+      const user = await usersDb.getUserById(request.params.id);
       if (!user) {
         reply.code(404).send({ error: 'User not found' });
         return;
       }
-      reply.code(200).send(user);
+      reply.send(user);
     }
   });
 };
-
-module.exports.users = users;

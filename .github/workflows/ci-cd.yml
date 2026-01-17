@@ -52,6 +52,7 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
+        kubectl apply -f k8s-mongodb.yaml
         kubectl apply -f k8s-rabbitmq.yaml
         for service in ${{ env.SERVICES }}; do
           sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" $service/k8s-$service.yaml | kubectl apply -f -

@@ -1,5 +1,5 @@
 const orders = new Map();
-let orderIdCounter = 0;
+let orderIdCounter = 1;
 
 const orderItemSchema = {
   type: 'object',

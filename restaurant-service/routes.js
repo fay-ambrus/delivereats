@@ -1,10 +1,9 @@
-const restaurants = new Map();
-let restaurantIdCounter = 1;
+const db = require('./db');
 
 const restaurantSchema = {
   type: 'object',
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     name: { type: 'string' },
     category: { type: 'string' }
   }
@@ -35,12 +34,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = restaurantIdCounter++;
-      const restaurant = {
-        id: id,
-        ...request.body
-      };
-      restaurants.set(id, restaurant);
+      const restaurant = await db.createRestaurant(request.body.name, request.body.category);
       reply.code(201).send(restaurant);
     }
   });
@@ -57,8 +51,8 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const allRestaurants = Array.from(restaurants.values());
-      reply.code(200).send(allRestaurants);
+      const restaurants = await db.getAllRestaurants();
+      reply.send(restaurants);
     }
   });
 
@@ -78,13 +72,14 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      const restaurant = restaurants.get(id);
+      const restaurant = await db.getRestaurantById(request.params.id);
+      
       if (!restaurant) {
         reply.code(404).send({ error: 'Restaurant not found' });
         return;
       }
-      reply.code(200).send(restaurant);
+      
+      reply.send({ id: restaurant.id, name: restaurant.name, category: restaurant.category });
     }
   });
 
@@ -112,17 +107,18 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      if (!restaurants.has(id)) {
+      const restaurant = await db.updateRestaurant(
+        request.params.id,
+        request.body.name,
+        request.body.category
+      );
+      
+      if (!restaurant) {
         reply.code(404).send({ error: 'Restaurant not found' });
         return;
       }
-      const restaurant = {
-        id: id,
-        ...request.body
-      };
-      restaurants.set(id, restaurant);
-      reply.code(200).send(restaurant);
+      
+      reply.send(restaurant);
     }
   });
 
@@ -147,15 +143,14 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const id = parseInt(request.params.id);
-      if (!restaurants.has(id)) {
+      const success = await db.deleteRestaurant(request.params.id);
+      
+      if (!success) {
         reply.code(404).send({ error: 'Restaurant not found' });
         return;
       }
-      restaurants.delete(id);
-      reply.code(200).send({ success: true });
+      
+      reply.send({ success: true });
     }
   });
 };
-
-module.exports.restaurants = restaurants;

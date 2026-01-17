@@ -20,7 +20,7 @@ createApp({
     },
 
     async selectRestaurant() {
-      this.selectedRestaurant = this.restaurants.find(r => r.id === parseInt(this.selectedRestaurantId));
+      this.selectedRestaurant = this.restaurants.find(r => r.id === this.selectedRestaurantId);
       this.restaurantCategory = this.selectedRestaurant.category || '';
       await this.fetchMenuItems();
       await this.fetchRestaurantOrders();

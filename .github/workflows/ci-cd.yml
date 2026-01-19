@@ -60,7 +60,8 @@ jobs:
           sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" $service/k8s-$service.yaml | kubectl apply -f -
         done
         kubectl apply -f k8s-ingress.yaml
+        kubectl apply -f k8s-hpa.yaml
         for service in ${{ env.SERVICES }}; do
           kubectl rollout status deployment/$service --timeout=2m
         done
-        kubectl get pods,svc,ingress
+        kubectl get pods,svc,ingress,hpa

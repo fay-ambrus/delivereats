@@ -1,4 +1,17 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE menu;
+        CREATE DATABASE users;
+    EOSQL
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
@@ -36,10 +49,16 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        - name: postgres-init
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: postgres-pvc
+      - name: postgres-init
+        configMap:
+          name: postgres-init
+          defaultMode: 0755
 ---
 apiVersion: v1
 kind: Service

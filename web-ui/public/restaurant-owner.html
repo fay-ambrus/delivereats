@@ -70,17 +70,37 @@
       <button @click="addMenuItem">Add Item</button><br><br>
 
       <h3>Incoming orders</h3>
-      <div v-if="restaurantOrders.length === 0">
-        <p>No orders yet</p>
+      <div v-if="activeOrders.length === 0">
+        <p>No active orders</p>
       </div>
       <div v-else>
-        <div v-for="order in restaurantOrders" :key="order.id">
-          <h4>Order #{{ order.id }} - {{ order.status }}</h4>
+        <div v-for="order in activeOrders" :key="order.id">
+          <h4>Order #{{ order.id }}</h4>
           <ul>
             <li v-for="item in order.items" :key="item.menuItemId">
               {{ getMenuItemName(item.menuItemId) }} x {{ item.quantity }}
             </li>
           </ul>
+          <p><strong>Status:</strong> {{ order.status }}</p>
+          <button @click="updateOrderStatus(order.id, 'preparing')" :disabled="order.status !== 'pending'">Start preparing</button>
+          <button @click="updateOrderStatus(order.id, 'packing')" :disabled="order.status !== 'preparing'">Start packing</button>
+          <button @click="updateOrderStatus(order.id, 'ready_for_courier')" :disabled="order.status !== 'packing'">Ready for courier</button>
+        </div>
+      </div>
+
+      <h3>Completed orders</h3>
+      <div v-if="completedOrders.length === 0">
+        <p>No completed orders</p>
+      </div>
+      <div v-else>
+        <div v-for="order in completedOrders" :key="order.id">
+          <h4>Order #{{ order.id }}</h4>
+          <ul>
+            <li v-for="item in order.items" :key="item.menuItemId">
+              {{ getMenuItemName(item.menuItemId) }} x {{ item.quantity }}
+            </li>
+          </ul>
+          <p><strong>Status:</strong> {{ order.status }}</p>
         </div>
       </div>
 

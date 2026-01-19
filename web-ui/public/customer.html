@@ -39,13 +39,24 @@
       <button @click="selectRestaurant" :disabled="!selectedRestaurantId">View Menu</button>
 
       <h3>Your Orders</h3>
-      <div v-if="userOrders.length === 0">
-        <p>No orders placed yet</p>
+      <div v-if="activeOrders.length === 0">
+        <p>No active orders</p>
       </div>
       <div v-else>
-        <div v-for="order in userOrders" :key="order.id">
-          <strong>Order #{{ order.id }}</strong> - {{ order.status }} - {{ getRestaurantName(order.restaurantId) }}
+        <div v-for="(order, idx) in activeOrders" :key="order.id">
+          <strong>Order #{{ idx }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ order.status }}
         </div>
+      </div>
+
+      <h3>Completed Orders</h3>
+      <div v-if="completedOrders.length === 0">
+        <p>No completed orders</p>
+      </div>
+      <div v-else>
+        <div v-for="order in completedOrders" :key="order.id">
+          <strong>{{ order.id }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ order.status }}
+        </div>
+      </div>
       </div>
     </div>
 
@@ -87,7 +98,7 @@
           </li>
         </ul>
         <p><strong>Total: {{ cartTotal }} Ft</strong></p>
-        <button @click="submitOrder">Place Order</button>
+        <button @click="submitOrder">Place order</button>
         <button @click="resetCart">Reset cart</button>
       </div>
       <p v-else>Your cart is empty</p>

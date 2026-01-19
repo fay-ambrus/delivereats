@@ -73,19 +73,22 @@ createApp({
     backToRestaurants() {
       this.selectedRestaurant = null;
       this.cart = {};
-    },
-
-    async viewOrders() {
-      this.viewMode = 'orders';
-      await this.loadUserOrders();
+      loadUserOrders();
     },
 
     async loadUserOrders() {
       const response = await fetch(`/api/order/orders?customerId=${this.selectedUser.id}`);
       this.userOrders = await response.json();
-      
+
       const menuResponse = await fetch('/api/menu/menu-items');
       this.allMenuItems = await menuResponse.json();
+    },
+
+    computeOrderTotal(order) {
+      return order.items.reduce((sum, item) => {
+        const menuItem = this.allMenuItems.find(m => m.id === item.menuItemId);
+        return sum + (menuItem ? menuItem.priceHUF * item.quantity : 0);
+      }, 0);
     },
 
     getRestaurantName(restaurantId) {
@@ -119,7 +122,8 @@ createApp({
       });
 
       const order = await response.json();
-      alert(`Order placed successfully! Order ID: ${order.id}`);
+      const total = this.cartTotal;
+      alert(`Order placed successfully! Order ID: ${order.id}\nTotal: ${total} Ft`);
       this.cart = {};
       this.backToRestaurants();
     }
@@ -138,6 +142,14 @@ createApp({
 
     cartTotal() {
       return this.cartItems.reduce((sum, item) => sum + item.total, 0);
+    },
+
+    activeOrders() {
+      return this.userOrders.filter(o => o.status !== 'delivering' && o.status !== 'delivered');
+    },
+
+    completedOrders() {
+      return this.userOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
     }
   },
 

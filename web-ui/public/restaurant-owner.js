@@ -113,6 +113,24 @@ createApp({
     getMenuItemName(menuItemId) {
       const item = this.menuItems.find(i => i.id === menuItemId);
       return item ? item.name : 'Unknown';
+    },
+
+    async updateOrderStatus(orderId, newStatus) {
+      await fetch(`/api/order/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      await this.fetchRestaurantOrders();
+    }
+  },
+
+  computed: {
+    activeOrders() {
+      return this.restaurantOrders.filter(o => o.status !== 'delivering' && o.status !== 'delivered');
+    },
+    completedOrders() {
+      return this.restaurantOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
     }
   },
 

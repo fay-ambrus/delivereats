@@ -1,0 +1,46 @@
+name: Seed Database
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}
+
+jobs:
+  seed-database:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+      env:
+        KUBECONFIG: $HOME/.kube/config
+
+    - name: Skip TLS verification
+      run: |
+        kubectl config set-cluster default --insecure-skip-tls-verify=true
+
+    - name: Delete old seed job if exists
+      run: |
+        kubectl delete job seed-data --ignore-not-found=true
+
+    - name: Deploy seed job
+      run: |
+        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|latest|g" seed-data/k8s-seed-data.yaml | kubectl apply -f -
+
+    - name: Wait for seed job to complete
+      run: |
+        kubectl wait --for=condition=complete --timeout=120s job/seed-data
+        kubectl logs job/seed-data

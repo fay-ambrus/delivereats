@@ -4,7 +4,7 @@ import json
 import sys
 import os
 
-API_BASE = 'http://vm.smallville.cloud.bme.hu:11837'
+API_BASE = os.getenv('API_BASE', 'http://traefik.kube-system.svc.cluster.local')
 
 def load_seed_data():
     with open('seed-data.json', 'r') as f:

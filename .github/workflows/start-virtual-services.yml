@@ -1,0 +1,40 @@
+name: Start Virtual Services
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}
+
+jobs:
+  start-virtual-services:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+      env:
+        KUBECONFIG: $HOME/.kube/config
+
+    - name: Skip TLS verification
+      run: |
+        kubectl config set-cluster default --insecure-skip-tls-verify=true
+
+    - name: Deploy virtual services
+      run: |
+        for service in virtual-customer virtual-restaurant virtual-courier; do
+          sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|latest|g" $service/k8s-$service.yaml | kubectl apply -f -
+        done
+        kubectl get pods | grep virtual

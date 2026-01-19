@@ -1,0 +1,41 @@
+name: Delete All Data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete-all-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+      env:
+        KUBECONFIG: $HOME/.kube/config
+
+    - name: Skip TLS verification
+      run: |
+        kubectl config set-cluster default --insecure-skip-tls-verify=true
+
+    - name: Truncate PostgreSQL tables
+      run: |
+        kubectl exec deployment/postgres -- psql -U postgres -d users -c "TRUNCATE TABLE user_events CASCADE;"
+        kubectl exec deployment/postgres -- psql -U postgres -d menu -c "TRUNCATE TABLE menu_item_events CASCADE;"
+
+    - name: Delete MongoDB collections
+      run: |
+        kubectl exec deployment/mongodb -- mongosh orders --eval "db.order_events.deleteMany({})"
+        kubectl exec deployment/mongodb -- mongosh couriers --eval "db.courier_events.deleteMany({})"
+        kubectl exec deployment/mongodb -- mongosh restaurants --eval "db.restaurant_events.deleteMany({})"
+
+    - name: Verify deletion
+      run: |
+        echo "All data deleted successfully!"

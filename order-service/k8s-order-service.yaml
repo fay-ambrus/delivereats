@@ -22,14 +22,6 @@ spec:
         env:
         - name: MONGO_URL
           value: "mongodb://mongodb:27017"
-        - name: POSTGRES_HOST
-          value: "postgres"
-        - name: POSTGRES_DB
-          value: "users"
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "postgres"
 ---
 apiVersion: v1
 kind: Service

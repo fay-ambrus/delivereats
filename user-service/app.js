@@ -3,20 +3,12 @@ const db = require('./db');
 
 // Global error handler
 fastify.setErrorHandler((error, request, reply) => {
-  if (error.validation) {
-    if (error.validation[0].params.additionalProperty) {
-      reply.code(400).send({ 
-        error: 'Only the status field can be updated for orders' 
-      });
-      return;
-    }
-  }
   fastify.log.error(error);
   reply.code(500).send({ error: 'Internal server error' });
 });
 
 // Register routes
-fastify.register(require('./routes'), { prefix: '/api/order' });
+fastify.register(require('./routes'), { prefix: '/api/user' });
 
 const start = async () => {
   try {

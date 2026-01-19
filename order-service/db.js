@@ -15,7 +15,7 @@ async function connect() {
 async function rebuildOrderState(orderId) {
   const events = await eventsCollection.find({ orderId }).sort({ timestamp: 1 }).toArray();
   let state = null;
-  
+
   for (const event of events) {
     if (event.type === 'OrderCreated') {
       state = { id: event.orderId, ...event.data, status: 'pending' };
@@ -25,7 +25,7 @@ async function rebuildOrderState(orderId) {
       state = null;
     }
   }
-  
+
   return state;
 }
 
@@ -36,7 +36,7 @@ async function createOrder(order) {
     timestamp: new Date(),
     data: { customerId: order.customerId, restaurantId: order.restaurantId, items: order.items }
   };
-  
+
   await eventsCollection.insertOne(event);
   return await rebuildOrderState(order.id);
 }
@@ -44,17 +44,17 @@ async function createOrder(order) {
 async function getAllOrders(customerId, restaurantId) {
   const allOrderIds = await eventsCollection.distinct('orderId');
   const orders = [];
-  
+
   for (const orderId of allOrderIds) {
     const state = await rebuildOrderState(orderId);
     if (state) {
-      if ((!customerId || state.customerId === customerId) && 
+      if ((!customerId || state.customerId === customerId) &&
           (!restaurantId || state.restaurantId === restaurantId)) {
         orders.push(state);
       }
     }
   }
-  
+
   return orders;
 }
 
@@ -65,14 +65,14 @@ async function getOrderById(id) {
 async function updateOrderStatus(id, status) {
   const existing = await rebuildOrderState(id);
   if (!existing) return null;
-  
+
   const event = {
     type: 'OrderStatusUpdated',
     orderId: id,
     timestamp: new Date(),
     data: { status }
   };
-  
+
   await eventsCollection.insertOne(event);
   return await rebuildOrderState(id);
 }
@@ -80,14 +80,14 @@ async function updateOrderStatus(id, status) {
 async function deleteOrder(id) {
   const existing = await rebuildOrderState(id);
   if (!existing) return false;
-  
+
   const event = {
     type: 'OrderDeleted',
     orderId: id,
     timestamp: new Date(),
     data: {}
   };
-  
+
   await eventsCollection.insertOne(event);
   return true;
 }

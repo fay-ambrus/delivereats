@@ -7,7 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}
-  SERVICES: web-ui menu-service order-service restaurant-service
+  SERVICES: web-ui menu-service order-service restaurant-service user-service
 
 jobs:
   build-and-deploy:

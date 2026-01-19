@@ -1,0 +1,12 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "fastify": "^4.25.0",
+    "pg": "^8.11.0"
+  }
+}

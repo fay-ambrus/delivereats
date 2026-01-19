@@ -1,4 +1,4 @@
-const usersDb = require('../usersDb');
+const db = require('./db');
 const { randomUUID } = require('crypto');
 
 const userSchema = {
@@ -37,7 +37,7 @@ module.exports = async function (fastify, opts) {
         id: randomUUID(),
         ...request.body
       };
-      await usersDb.createUser(user);
+      await db.createUser(user);
       reply.code(201).send(user);
     }
   });
@@ -54,7 +54,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const users = await usersDb.getAllUsers();
+      const users = await db.getAllUsers();
       reply.send(users);
     }
   });
@@ -75,7 +75,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const user = await usersDb.getUserById(request.params.id);
+      const user = await db.getUserById(request.params.id);
       if (!user) {
         reply.code(404).send({ error: 'User not found' });
         return;

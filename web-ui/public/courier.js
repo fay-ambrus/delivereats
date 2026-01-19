@@ -12,7 +12,7 @@ createApp({
   },
   methods: {
     async fetchUsers() {
-      const response = await fetch('/api/users/user');
+      const response = await fetch('/api/courier/couriers');
       this.users = await response.json();
     },
 
@@ -23,7 +23,7 @@ createApp({
 
     async addUser() {
       if (!this.newUserName) return;
-      const response = await fetch('/api/users/user', {
+      const response = await fetch('/api/courier/couriers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: this.newUserName })
@@ -79,15 +79,15 @@ createApp({
     },
 
     myActiveOrders() {
-      return this.allOrders.filter(o => 
-        o.courierId === this.selectedUser.id && 
+      return this.allOrders.filter(o =>
+        o.courierId == this.selectedUser.id &&
         (o.status === 'courier_assigned' || o.status === 'delivering')
       );
     },
 
     myCompletedOrders() {
-      return this.allOrders.filter(o => 
-        o.courierId === this.selectedUser.id && 
+      return this.allOrders.filter(o =>
+        o.courierId === this.selectedUser.id &&
         o.status === 'delivered'
       );
     }

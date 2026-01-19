@@ -1,0 +1,12 @@
+{
+  "name": "courier-service",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "fastify": "^4.0.0",
+    "mongodb": "^5.0.0"
+  }
+}

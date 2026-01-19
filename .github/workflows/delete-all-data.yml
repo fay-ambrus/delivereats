@@ -32,9 +32,9 @@ jobs:
 
     - name: Delete MongoDB collections
       run: |
-        kubectl exec deployment/mongodb -- mongosh orders --eval "db.order_events.deleteMany({})"
-        kubectl exec deployment/mongodb -- mongosh couriers --eval "db.courier_events.deleteMany({})"
-        kubectl exec deployment/mongodb -- mongosh restaurants --eval "db.restaurant_events.deleteMany({})"
+        kubectl exec deployment/mongodb -- mongo orders --eval "db.order_events.deleteMany({})"
+        kubectl exec deployment/mongodb -- mongo couriers --eval "db.courier_events.deleteMany({})"
+        kubectl exec deployment/mongodb -- mongo restaurants --eval "db.restaurant_events.deleteMany({})"
 
     - name: Verify deletion
       run: |

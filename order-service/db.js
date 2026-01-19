@@ -20,7 +20,7 @@ async function rebuildOrderState(orderId) {
     if (event.type === 'OrderCreated') {
       state = { id: event.orderId, ...event.data, status: 'pending' };
     } else if (event.type === 'OrderStatusUpdated' && state) {
-      state = { ...state, status: event.data.status };
+      state.status = event.data.status;
       if (event.data.courierId) {
         state.courierId = event.data.courierId;
       }
@@ -76,7 +76,8 @@ async function updateOrderStatus(id, status, courierId) {
     data: { status }
   };
 
-  if (courierId) {
+  // Only allow setting courierId if it's not already set
+  if (courierId && !existing.courierId) {
     event.data.courierId = courierId;
   }
 

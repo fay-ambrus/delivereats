@@ -1,5 +1,5 @@
 const { createApp } = Vue;
-createApp({
+const app = createApp({
   data() {
     return {
       users: [],
@@ -79,6 +79,8 @@ createApp({
     },
 
     myActiveOrders() {
+      console.log(this.allOrders);
+      console.log(this.selectedUser.id);
       return this.allOrders.filter(o =>
         o.courierId == this.selectedUser.id &&
         (o.status === 'courier_assigned' || o.status === 'delivering')
@@ -102,4 +104,6 @@ createApp({
       }
     }, 5000);
   }
-}).mount('#app');
+});
+
+window.app = app.mount('#app');

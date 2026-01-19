@@ -73,7 +73,7 @@ createApp({
     backToRestaurants() {
       this.selectedRestaurant = null;
       this.cart = {};
-      loadUserOrders();
+      this.loadUserOrders();
     },
 
     async loadUserOrders() {

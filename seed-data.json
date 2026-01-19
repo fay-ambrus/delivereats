@@ -13,7 +13,7 @@
   ],
   "restaurants": [
     {
-      "name": "Pizza Manufaktúra",
+      "name": "Pizza Manufaktura",
       "category": "Italian",
       "menu": [
         {"name": "Pepperori pizza", "price": 3690},
@@ -25,7 +25,7 @@
       "name": "Simon's Burger",
       "category": "American",
       "menu": [
-        {"name": "Nagy adag sültkrumpli", "price": 1290},
+        {"name": "Fries", "price": 1290},
         {"name": "Cheeseburger", "price": 3690},
         {"name": "Simon's Special Burger", "price": 3390}
       ]

@@ -18,7 +18,7 @@ def get_restaurants():
     return response.json()
 
 def get_menu_items(restaurant_id):
-    response = requests.get(f'{API_BASE}/api/menu/menu?restaurantId={restaurant_id}')
+    response = requests.get(f'{API_BASE}/api/menu/restaurants/{restaurant_id}/menu-items')
     return response.json()
 
 def create_order(customer_id, restaurant_id, items):
@@ -63,4 +63,4 @@ if __name__ == '__main__':
             print(f'Error: {e}', flush=True)
             import traceback
             traceback.print_exc()
-        time.sleep(random.randint(10, 30))
+        time.sleep(random.randint(100, 1000) / 1000.0)

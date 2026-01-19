@@ -58,4 +58,4 @@ if __name__ == '__main__':
             print(f'Error: {e}', flush=True)
             import traceback
             traceback.print_exc()
-        time.sleep(random.randint(5, 15))
+        time.sleep(random.randint(100, 1000) / 1000.0)

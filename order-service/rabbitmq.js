@@ -1,4 +1,5 @@
 const amqp = require('amqplib');
+const db = require('./db');
 
 let connection, channel;
 
@@ -7,7 +8,34 @@ async function connect() {
   connection = await amqp.connect(rabbitmqUrl);
   channel = await connection.createChannel();
   await channel.assertExchange('orders', 'topic', { durable: true });
-  console.log('Connected to RabbitMQ');
+  
+  const queue = await channel.assertQueue('order-service-updates', { durable: true });
+  await channel.bindQueue(queue.queue, 'orders', 'order.status_update');
+  await channel.bindQueue(queue.queue, 'orders', 'order.courier_update');
+  
+  channel.consume(queue.queue, async (msg) => {
+    const event = JSON.parse(msg.content.toString());
+    await handleEvent(event);
+    channel.ack(msg);
+  });
+  
+  console.log('Order-service connected to RabbitMQ');
+}
+
+async function handleEvent(event) {
+  const { type, data } = event;
+  
+  if (type === 'order.status_update') {
+    const order = await db.updateOrderStatus(data.id, data.status);
+    if (order) {
+      await publishEvent('order.updated', order);
+    }
+  } else if (type === 'order.courier_update') {
+    const order = await db.updateOrderStatus(data.id, data.status, data.courierId);
+    if (order) {
+      await publishEvent('order.updated', order);
+    }
+  }
 }
 
 async function publishEvent(eventType, data) {

@@ -11,7 +11,6 @@ async function connect() {
   
   const queue = await channel.assertQueue('', { exclusive: true });
   await channel.bindQueue(queue.queue, 'orders', 'order.*');
-  
   channel.consume(queue.queue, (msg) => {
     const event = JSON.parse(msg.content.toString());
     handleEvent(event);
@@ -43,8 +42,19 @@ async function initializeCache() {
   console.log(`Initialized cache with ${orders.length} orders`);
 }
 
+async function publishEvent(eventType, data) {
+  if (!channel) {
+    console.error('RabbitMQ channel not initialized');
+    return;
+  }
+  const message = JSON.stringify({ type: eventType, data, timestamp: new Date() });
+  channel.publish('orders', eventType, Buffer.from(message));
+  console.log(`Published event: ${eventType}`);
+}
+
 module.exports = {
   connect,
   getOrders,
-  initializeCache
+  initializeCache,
+  publishEvent
 };

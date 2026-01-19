@@ -191,13 +191,11 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const response = await fetch(`http://order-service:3000/api/order/orders/${request.params.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request.body)
+      await rabbitmq.publishEvent('order.status_update', {
+        id: request.params.id,
+        status: request.body.status
       });
-      const order = await response.json();
-      reply.send(order);
+      reply.send({ success: true });
     }
   });
 };

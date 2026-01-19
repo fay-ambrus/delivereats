@@ -11,7 +11,6 @@ async function connect() {
   
   const queue = await channel.assertQueue('', { exclusive: true });
   await channel.bindQueue(queue.queue, 'orders', 'order.*');
-  
   channel.consume(queue.queue, (msg) => {
     const event = JSON.parse(msg.content.toString());
     handleEvent(event);

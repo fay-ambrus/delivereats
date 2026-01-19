@@ -2,11 +2,15 @@ import requests
 import random
 import time
 import os
+import sys
 
 API_BASE = os.getenv('API_BASE')
 
+print(f'Virtual customer starting with API_BASE: {API_BASE}', flush=True)
+
 def get_users():
     response = requests.get(f'{API_BASE}/api/users/user')
+    response.raise_for_status()
     return response.json()
 
 def get_restaurants():
@@ -31,7 +35,7 @@ def simulate_customer():
     restaurants = get_restaurants()
 
     if not users or not restaurants:
-        print('No users or restaurants available')
+        print('No users or restaurants available', flush=True)
         return
 
     user = random.choice(users)
@@ -39,7 +43,7 @@ def simulate_customer():
 
     menu_items = get_menu_items(restaurant['id'])
     if not menu_items:
-        print(f'No menu items for restaurant {restaurant["name"]}')
+        print(f'No menu items for restaurant {restaurant["name"]}', flush=True)
         return
 
     num_items = random.randint(1, 3)
@@ -47,13 +51,16 @@ def simulate_customer():
     items = [{'menuItemId': item['id'], 'quantity': random.randint(1, 2)} for item in selected_items]
 
     order = create_order(user['id'], restaurant['id'], items)
-    print(f'Order created: {order["id"]} - {user["name"]} ordered from {restaurant["name"]}')
+    print(f'Order created: {order["id"]} - {user["name"]} ordered from {restaurant["name"]}', flush=True)
 
 if __name__ == '__main__':
-    print('Virtual customer service started')
+    print('Virtual customer service started', flush=True)
+    print(f'API_BASE: {API_BASE}', flush=True)
     while True:
         try:
             simulate_customer()
         except Exception as e:
-            print(f'Error: {e}')
+            print(f'Error: {e}', flush=True)
+            import traceback
+            traceback.print_exc()
         time.sleep(random.randint(10, 30))

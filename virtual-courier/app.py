@@ -2,11 +2,15 @@ import requests
 import random
 import time
 import os
+import sys
 
 API_BASE = os.getenv('API_BASE')
 
+print(f'Virtual courier starting with API_BASE: {API_BASE}', flush=True)
+
 def get_couriers():
     response = requests.get(f'{API_BASE}/api/courier/couriers')
+    response.raise_for_status()
     return response.json()
 
 def get_orders():
@@ -24,7 +28,7 @@ def simulate_courier():
     couriers = get_couriers()
 
     if not couriers:
-        print('No couriers available')
+        print('No couriers available', flush=True)
         return
 
     courier = random.choice(couriers)
@@ -37,21 +41,24 @@ def simulate_courier():
     if ready_orders:
         order = random.choice(ready_orders)
         update_order(order['id'], 'courier_assigned', courier['id'])
-        print(f'Courier {courier["name"]}: Accepted order {order["id"]}')
+        print(f'Courier {courier["name"]}: Accepted order {order["id"]}', flush=True)
     elif assigned_orders:
         order = random.choice(assigned_orders)
         update_order(order['id'], 'delivering')
-        print(f'Courier {courier["name"]}: Started delivering order {order["id"]}')
+        print(f'Courier {courier["name"]}: Started delivering order {order["id"]}', flush=True)
     elif delivering_orders:
         order = random.choice(delivering_orders)
         update_order(order['id'], 'delivered')
-        print(f'Courier {courier["name"]}: Delivered order {order["id"]}')
+        print(f'Courier {courier["name"]}: Delivered order {order["id"]}', flush=True)
 
 if __name__ == '__main__':
-    print('Virtual courier service started')
+    print('Virtual courier service started', flush=True)
+    print(f'API_BASE: {API_BASE}', flush=True)
     while True:
         try:
             simulate_courier()
         except Exception as e:
-            print(f'Error: {e}')
+            print(f'Error: {e}', flush=True)
+            import traceback
+            traceback.print_exc()
         time.sleep(random.randint(5, 15))

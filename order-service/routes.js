@@ -128,7 +128,8 @@ module.exports = async function (fastify, opts) {
         type: 'object',
         required: ['status'],
         properties: {
-          status: { type: 'string' }
+          status: { type: 'string' },
+          courierId: { type: 'string' }
         },
         additionalProperties: false
       },
@@ -138,7 +139,7 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const order = await db.updateOrderStatus(request.params.id, request.body.status);
+      const order = await db.updateOrderStatus(request.params.id, request.body.status, request.body.courierId);
       if (!order) {
         reply.code(404).send({ error: 'Order not found' });
         return;

@@ -3,12 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeliverEats</title>
+  <title>Courier - DeliverEats</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
   <div id="app">
-    <h1>DeliverEats - Courier</h1>
-    <p>Courier site</p>
+    <h1>Courier Portal</h1>
+
+    <div v-if="!selectedUser">
+      <h2>Select courier</h2>
+      <select v-model="selectedUserId">
+        <option value="">-- Choose a courier --</option>
+        <option v-for="user in users" :value="user.id">
+          {{ user.name }}
+        </option>
+      </select>
+      <button @click="selectUser" :disabled="!selectedUserId">Continue</button>
+
+      <h3>Add new courier</h3>
+      <input v-model="newUserName" placeholder="Your name">
+      <button @click="addUser" :disabled="!newUserName">Add</button>
+    </div>
+
+    <div v-else>
+      <h2>Welcome, {{ selectedUser.name }}!</h2>
+      <button @click="selectedUser = null">Change courier</button>
+
+      <h3>Available deliveries</h3>
+      <div v-if="availableOrders.length === 0">
+        <p>No orders waiting for courier</p>
+      </div>
+      <div v-else>
+        <div v-for="order in availableOrders" :key="order.id">
+          <h4>Order {{ order.id }}</h4>
+          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
+          <p><strong>Items:</strong> {{ order.items.length }}</p>
+          <button @click="acceptOrder(order.id)">Accept delivery</button>
+        </div>
+      </div>
+
+      <h3>My Active Deliveries</h3>
+      <div v-if="myActiveOrders.length === 0">
+        <p>No active deliveries</p>
+      </div>
+      <div v-else>
+        <div v-for="order in myActiveOrders" :key="order.id">
+          <h4>Order {{ order.id }}</h4>
+          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
+          <p><strong>Status:</strong> {{ order.status }}</p>
+          <button @click="updateOrderStatus(order.id, 'delivering')" :disabled="order.status !== 'courier_assigned'">Start delivery</button>
+          <button @click="updateOrderStatus(order.id, 'delivered')" :disabled="order.status !== 'delivering'">Mark as delivered</button>
+        </div>
+      </div>
+
+      <h3>Completed Deliveries</h3>
+      <div v-if="myCompletedOrders.length === 0">
+        <p>No completed deliveries</p>
+      </div>
+      <div v-else>
+        <div v-for="order in myCompletedOrders" :key="order.id" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background-color: #f0f0f0;">
+          <h4>Order {{ order.id }}</h4>
+          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
+          <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script src="courier.js"></script>
 </body>
 </html>

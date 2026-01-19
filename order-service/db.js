@@ -21,6 +21,9 @@ async function rebuildOrderState(orderId) {
       state = { id: event.orderId, ...event.data, status: 'pending' };
     } else if (event.type === 'OrderStatusUpdated' && state) {
       state = { ...state, status: event.data.status };
+      if (event.data.courierId) {
+        state.courierId = event.data.courierId;
+      }
     } else if (event.type === 'OrderDeleted') {
       state = null;
     }
@@ -62,7 +65,7 @@ async function getOrderById(id) {
   return await rebuildOrderState(id);
 }
 
-async function updateOrderStatus(id, status) {
+async function updateOrderStatus(id, status, courierId) {
   const existing = await rebuildOrderState(id);
   if (!existing) return null;
 
@@ -72,6 +75,10 @@ async function updateOrderStatus(id, status) {
     timestamp: new Date(),
     data: { status }
   };
+
+  if (courierId) {
+    event.data.courierId = courierId;
+  }
 
   await eventsCollection.insertOne(event);
   return await rebuildOrderState(id);

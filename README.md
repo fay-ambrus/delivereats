@@ -38,34 +38,46 @@ Az felhasználóknak, az éttermeknek és a futároknak egy közös, nagyon mini
         <td>Nagyon minimális lesz a frontend és nincs sok tapasztalatom a frontend frameworkökkel, ezért a Vue.js-t válaszottam, ami állítólag nagyon könnyen tanulható.</td>
     </tr>
     <tr>
-        <td>menu-serivce</td>
+        <td>menu-service</td>
         <td>JS</td>
-        <td>Ez a szolgáltatás a menüelemek felvételére-módosítására (éttermek) és böngészésére (rendelők) szolgál. A menüelemek nem perzisztálódnak, csak a memóriában tárolódnak.</td>
+        <td>Ez a szolgáltatás a menüelemek felvételére-módosítására (éttermek) és böngészésére (rendelők) szolgál. A menüelemek PostgreSQL adatbázisban perzisztálódnak event sourcing mintával.</td>
         <td>Valószínűleg a Fastify JS könyvtárat fogom használni, hogy meggyorsítsam az API készítést.</td>
     </tr>
     <tr>
         <td>order-service</td>
         <td>JS</td>
-        <td>Ez a szolgáltatás a rendelések felvételére szolgál a felhasználóknak. Validálja a rendelések helyességét és üzeneteket ír az üzenetsorba az új rendelésekkel kapcsolatban. A rendelések egy MondogDB adatbáziba perzisztálódnak.</td>
+        <td>Ez a szolgáltatás a rendelések felvételére szolgál a felhasználóknak. Validálja a rendelések helyességét és üzeneteket ír az üzenetsorba az új rendelésekkel kapcsolatban. A rendelések egy MongoDB adatbázisban perzisztálódnak event sourcing mintával.</td>
         <td>Valószínűleg a Fastify JS könyvtárat fogom használni, hogy meggyorsítsam az API készítést. A JS MongoDB-vel is jól működik együtt.</td>
     </tr>
     <tr>
         <td>restaurant-service</td>
         <td>JS</td>
-        <td>Éttermek megtekinthetik a hozzájuk bejövő rendeléseket, és frissíthetik a rendelések státuszát. Ez a szolgáltatás üzeneteket fogyasz az üzenetsorból az új rendelésekkel kapcsolatban és új üzeneteket tesz közzé az állapotuk firssülésével kacspolatban.</td>
+        <td>Éttermek kezelése és a hozzájuk bejövő rendelések megtekintése. Frissíthetik a rendelések státuszát. Ez a szolgáltatás üzeneteket fogyaszt az üzenetsorból és új üzeneteket tesz közzé. Az éttermek MongoDB adatbázisban perzisztálódnak event sourcing mintával.</td>
         <td>Valószínűleg a Fastify JS könyvtárat fogom használni, hogy meggyorsítsam az API készítést.</td>
     </tr>
     <tr>
         <td>courier-service</td>
         <td>JS</td>
-        <td>A futárok megtekinthetik az elérhető kiszállításokat és elfogadhatják őket. Ez a szolgáltatás üzeneteket fogyaszt az üzenetsorból az elérhető kiszállításokkal kapcsolatban és új üzeneteket tesz közzé ezek elfogadásáról.</td>
+        <td>Futárok kezelése és az elérhető kiszállítások megtekintése. A futárok elfogadhatják a kiszállításokat. Ez a szolgáltatás üzeneteket fogyaszt az üzenetsorból és új üzeneteket tesz közzé. A futárok MongoDB adatbázisban perzisztálódnak event sourcing mintával.</td>
         <td>Valószínűleg a Fastify JS könyvtárat fogom használni, hogy meggyorsítsam az API készítést.</td>
     </tr>
     <tr>
-        <td>order-db</td>
-        <td>MongoDB</td>
-        <td>MongoDB NoSQL adatbázis a megrendelések adatainak tárolásához.</td>
+        <td>user-service</td>
+        <td>JS</td>
+        <td>Felhasználók kezelése. A felhasználók PostgreSQL adatbázisban perzisztálódnak event sourcing mintával.</td>
         <td>Valószínűleg a Fastify JS könyvtárat fogom használni, hogy meggyorsítsam az API készítést.</td>
+    </tr>
+    <tr>
+        <td>mongo-db</td>
+        <td>MongoDB</td>
+        <td>MongoDB NoSQL adatbázis a megrendelések, éttermek és futárok adatainak tárolásához event sourcing mintával.</td>
+        <td>MongoDB rugalmas és jól működik event sourcing-gal.</td>
+    </tr>
+    <tr>
+        <td>postgres-db</td>
+        <td>PostgreSQL</td>
+        <td>PostgreSQL relációs adatbázis a felhasználók és menüelemek tárolásához event sourcing mintával.</td>
+        <td>PostgreSQL megbízható perzisztencia event sourcing-hoz.</td>
     </tr>
     <tr>
         <td>aszinkron üzenetsor</td>

@@ -36,6 +36,13 @@ spec:
             name: order-service
             port:
               number: 3000
+      - path: /api/courier
+        pathType: Prefix
+        backend:
+          service:
+            name: courier-service
+            port:
+              number: 3000
       - path: /
         pathType: Prefix
         backend:

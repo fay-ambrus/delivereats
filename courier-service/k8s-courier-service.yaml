@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: courier-service
-        image: courier-service:latest
-        imagePullPolicy: Never
+        image: ghcr.io/IMAGE_OWNER/courier-service:IMAGE_TAG
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:

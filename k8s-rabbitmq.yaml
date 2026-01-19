@@ -24,6 +24,7 @@ kind: Service
 metadata:
   name: rabbitmq
 spec:
+  type: NodePort
   selector:
     app: rabbitmq
   ports:
@@ -33,3 +34,4 @@ spec:
   - name: management
     port: 15672
     targetPort: 15672
+    nodePort: 30672

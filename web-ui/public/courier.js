@@ -41,7 +41,7 @@ const app = createApp({
     },
 
     async loadOrders() {
-      const response = await fetch('/api/order/orders');
+      const response = await fetch('/api/courier/orders');
       this.allOrders = await response.json();
     },
 
@@ -51,7 +51,7 @@ const app = createApp({
     },
 
     async acceptOrder(orderId) {
-      await fetch(`/api/order/orders/${orderId}`, {
+      await fetch(`/api/courier/orders/${orderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'courier_assigned', courierId: this.selectedUser.id })
@@ -60,7 +60,7 @@ const app = createApp({
     },
 
     async updateOrderStatus(orderId, newStatus) {
-      await fetch(`/api/order/orders/${orderId}`, {
+      await fetch(`/api/courier/orders/${orderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -79,8 +79,6 @@ const app = createApp({
     },
 
     myActiveOrders() {
-      console.log(this.allOrders);
-      console.log(this.selectedUser.id);
       return this.allOrders.filter(o =>
         o.courierId === this.selectedUser.id &&
         (o.status === 'courier_assigned' || o.status === 'delivering')

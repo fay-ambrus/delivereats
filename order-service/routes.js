@@ -1,4 +1,5 @@
 const db = require('./db');
+const rabbitmq = require('./rabbitmq');
 const { randomUUID } = require('crypto');
 
 const orderItemSchema = {
@@ -62,6 +63,7 @@ module.exports = async function (fastify, opts) {
         status: 'pending'
       };
       await db.createOrder(order);
+      await rabbitmq.publishEvent('order.created', order);
       reply.code(201).send(order);
     }
   });
@@ -145,6 +147,7 @@ module.exports = async function (fastify, opts) {
         reply.code(404).send({ error: 'Order not found' });
         return;
       }
+      await rabbitmq.publishEvent('order.updated', order);
       reply.send(order);
     }
   });

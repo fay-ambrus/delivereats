@@ -1,5 +1,6 @@
 const fastify = require('fastify')({ logger: true });
 const db = require('./db');
+const rabbitmq = require('./rabbitmq');
 
 // Global error handler
 fastify.setErrorHandler((error, request, reply) => {
@@ -21,6 +22,7 @@ fastify.register(require('./routes'), { prefix: '/api/order' });
 const start = async () => {
   try {
     await db.connect();
+    await rabbitmq.connect();
     await fastify.listen({ port: 3000, host: '0.0.0.0' });
   } catch (err) {
     fastify.log.error(err);

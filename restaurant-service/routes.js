@@ -1,4 +1,5 @@
 const db = require('./db');
+const rabbitmq = require('./rabbitmq');
 
 const restaurantSchema = {
   type: 'object',
@@ -151,6 +152,52 @@ module.exports = async function (fastify, opts) {
       }
       
       reply.send({ success: true });
+    }
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/orders',
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          restaurantId: { type: 'string' }
+        }
+      }
+    },
+    handler: async (request, reply) => {
+      const orders = rabbitmq.getOrders(request.query.restaurantId);
+      reply.send(orders);
+    }
+  });
+
+  fastify.route({
+    method: 'PUT',
+    url: '/orders/:id',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        }
+      },
+      body: {
+        type: 'object',
+        required: ['status'],
+        properties: {
+          status: { type: 'string' }
+        }
+      }
+    },
+    handler: async (request, reply) => {
+      const response = await fetch(`http://order-service:3000/api/order/orders/${request.params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request.body)
+      });
+      const order = await response.json();
+      reply.send(order);
     }
   });
 };

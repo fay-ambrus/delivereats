@@ -1,4 +1,5 @@
 const db = require('./db');
+const rabbitmq = require('./rabbitmq');
 const { randomUUID } = require('crypto');
 
 const courierSchema = {
@@ -146,6 +147,45 @@ module.exports = async function (fastify, opts) {
         return;
       }
       reply.send({ success: true });
+    }
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/orders',
+    handler: async (request, reply) => {
+      const orders = rabbitmq.getOrders();
+      reply.send(orders);
+    }
+  });
+
+  fastify.route({
+    method: 'PUT',
+    url: '/orders/:id',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        }
+      },
+      body: {
+        type: 'object',
+        required: ['status'],
+        properties: {
+          status: { type: 'string' },
+          courierId: { type: 'string' }
+        }
+      }
+    },
+    handler: async (request, reply) => {
+      const response = await fetch(`http://order-service:3000/api/order/orders/${request.params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request.body)
+      });
+      const order = await response.json();
+      reply.send(order);
     }
   });
 };

@@ -1,4 +1,5 @@
 const db = require('./db');
+const rabbitmq = require('./rabbitmq');
 const { randomUUID } = require('crypto');
 
 const userSchema = {
@@ -81,6 +82,23 @@ module.exports = async function (fastify, opts) {
         return;
       }
       reply.send(user);
+    }
+  });
+
+  fastify.route({
+    method: 'GET',
+    url: '/orders',
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          customerId: { type: 'string' }
+        }
+      }
+    },
+    handler: async (request, reply) => {
+      const orders = rabbitmq.getOrders(request.query.customerId);
+      reply.send(orders);
     }
   });
 };

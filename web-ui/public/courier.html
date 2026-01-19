@@ -61,7 +61,7 @@
         <p>No completed deliveries</p>
       </div>
       <div v-else>
-        <div v-for="order in myCompletedOrders" :key="order.id" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background-color: #f0f0f0;">
+        <div v-for="order in myCompletedOrders" :key="order.id">
           <h4>Order {{ order.id }}</h4>
           <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
           <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>

@@ -106,7 +106,7 @@ createApp({
     },
 
     async fetchRestaurantOrders() {
-      const response = await fetch(`/api/order/orders?restaurantId=${this.selectedRestaurant.id}`);
+      const response = await fetch(`/api/restaurant/orders?restaurantId=${this.selectedRestaurant.id}`);
       this.restaurantOrders = await response.json();
     },
 
@@ -116,7 +116,7 @@ createApp({
     },
 
     async updateOrderStatus(orderId, newStatus) {
-      await fetch(`/api/order/orders/${orderId}`, {
+      await fetch(`/api/restaurant/orders/${orderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

@@ -77,7 +77,7 @@ createApp({
     },
 
     async loadUserOrders() {
-      const response = await fetch(`/api/order/orders?customerId=${this.selectedUser.id}`);
+      const response = await fetch(`/api/users/orders?customerId=${this.selectedUser.id}`);
       this.userOrders = await response.json();
 
       const menuResponse = await fetch('/api/menu/menu-items');

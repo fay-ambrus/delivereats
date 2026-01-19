@@ -136,5 +136,10 @@ createApp({
 
   mounted() {
     this.fetchRestaurants();
+    setInterval(() => {
+      if (this.selectedRestaurant) {
+        this.fetchRestaurantOrders();
+      }
+    }, 5000);
   }
 }).mount('#app');

@@ -156,5 +156,10 @@ createApp({
   mounted() {
     this.fetchUsers();
     this.fetchRestaurants();
+    setInterval(() => {
+      if (this.selectedUser && !this.selectedRestaurant) {
+        this.loadUserOrders();
+      }
+    }, 5000);
   }
 }).mount('#app');

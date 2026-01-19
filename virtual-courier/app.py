@@ -61,4 +61,4 @@ if __name__ == '__main__':
             print(f'Error: {e}', flush=True)
             import traceback
             traceback.print_exc()
-        time.sleep(random.randint(100, 1000) / 1000.0)
+        time.sleep(random.randint(50, 500) / 1000.0)

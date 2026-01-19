@@ -44,7 +44,7 @@
       </div>
       <div v-else>
         <div v-for="order in activeOrders" :key="order.id">
-          <strong>Order #{{ order.id }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ order.status }}
+          <strong>Order #{{ order.id }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ prettyPrintStatus(order.status) }}
         </div>
       </div>
 
@@ -54,7 +54,7 @@
       </div>
       <div v-else>
         <div v-for="order in completedOrders" :key="order.id">
-          <strong>{{ order.id }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ order.status }}
+          <strong>{{ order.id }}</strong> - {{ getRestaurantName(order.restaurantId) }} - {{ computeOrderTotal(order) }} Ft - {{ prettyPrintStatus(order.status) }}
         </div>
       </div>
     </div>

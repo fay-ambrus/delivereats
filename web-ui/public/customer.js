@@ -101,6 +101,10 @@ createApp({
       return item ? item.name : 'Unknown';
     },
 
+    prettyPrintStatus(status) {
+      return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    },
+
     async submitOrder() {
       const items = Object.entries(this.cart)
         .filter(([itemId, quantity]) => quantity > 0)

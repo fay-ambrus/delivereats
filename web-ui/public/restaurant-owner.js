@@ -122,6 +122,10 @@ createApp({
         body: JSON.stringify({ status: newStatus })
       });
       await this.fetchRestaurantOrders();
+    },
+
+    prettyPrintStatus(status) {
+      return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
   },
 

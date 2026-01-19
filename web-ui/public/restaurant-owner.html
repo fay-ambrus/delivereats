@@ -81,7 +81,7 @@
               {{ getMenuItemName(item.menuItemId) }} x {{ item.quantity }}
             </li>
           </ul>
-          <p><strong>Status:</strong> {{ order.status }}</p>
+          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
           <button @click="updateOrderStatus(order.id, 'preparing')" :disabled="order.status !== 'pending'">Start preparing</button>
           <button @click="updateOrderStatus(order.id, 'packing')" :disabled="order.status !== 'preparing'">Start packing</button>
           <button @click="updateOrderStatus(order.id, 'ready_for_courier')" :disabled="order.status !== 'packing'">Ready for courier</button>
@@ -100,7 +100,7 @@
               {{ getMenuItemName(item.menuItemId) }} x {{ item.quantity }}
             </li>
           </ul>
-          <p><strong>Status:</strong> {{ order.status }}</p>
+          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
         </div>
       </div>
 

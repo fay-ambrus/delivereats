@@ -50,7 +50,7 @@
         <div v-for="order in myActiveOrders" :key="order.id">
           <h4>Order {{ order.id }}</h4>
           <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
-          <p><strong>Status:</strong> {{ order.status }}</p>
+          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
           <button @click="updateOrderStatus(order.id, 'delivering')" :disabled="order.status !== 'courier_assigned'">Start delivery</button>
           <button @click="updateOrderStatus(order.id, 'delivered')" :disabled="order.status !== 'delivering'">Mark as delivered</button>
         </div>
@@ -64,7 +64,7 @@
         <div v-for="order in myCompletedOrders" :key="order.id" style="border: 1px solid #ccc; padding: 10px; margin: 10px 0; background-color: #f0f0f0;">
           <h4>Order {{ order.id }}</h4>
           <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
-          <p><strong>Status:</strong> {{ order.status }}</p>
+          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
         </div>
       </div>
     </div>

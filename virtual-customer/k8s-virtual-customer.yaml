@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtual-customer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-customer
+  template:
+    metadata:
+      labels:
+        app: virtual-customer
+    spec:
+      containers:
+      - name: virtual-customer
+        image: ghcr.io/IMAGE_OWNER/virtual-customer:IMAGE_TAG
+        env:
+        - name: API_BASE
+          value: "http://traefik.kube-system.svc.cluster.local"

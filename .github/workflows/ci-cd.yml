@@ -8,6 +8,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}
   SERVICES: web-ui menu-service order-service restaurant-service user-service courier-service
+  VIRTUAL_SERVICES: virtual-customer virtual-restaurant virtual-courier
 
 jobs:
   build-and-deploy:
@@ -29,7 +30,7 @@ jobs:
 
     - name: Build and push images
       run: |
-        for service in ${{ env.SERVICES }}; do
+        for service in ${{ env.SERVICES }} ${{ env.VIRTUAL_SERVICES }}; do
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:${{ github.sha }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:latest ./$service
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$service:latest

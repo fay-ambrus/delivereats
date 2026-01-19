@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtual-courier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-courier
+  template:
+    metadata:
+      labels:
+        app: virtual-courier
+    spec:
+      containers:
+      - name: virtual-courier
+        image: ghcr.io/IMAGE_OWNER/virtual-courier:IMAGE_TAG
+        env:
+        - name: API_BASE
+          value: "http://traefik.kube-system.svc.cluster.local"

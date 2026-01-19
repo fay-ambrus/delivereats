@@ -1,0 +1,61 @@
+{
+  "users": [
+    {"name": "Alice Johnson"},
+    {"name": "Bob Smith"},
+    {"name": "Charlie Brown"},
+    {"name": "Diana Prince"},
+    {"name": "Eve Wilson"}
+  ],
+  "couriers": [
+    {"name": "John Rider"},
+    {"name": "Sarah Driver"},
+    {"name": "Mike Delivery"}
+  ],
+  "restaurants": [
+    {
+      "name": "Pizza Manufaktúra",
+      "category": "Italian",
+      "menu": [
+        {"name": "Pepperori pizza", "price": 3690},
+        {"name": "Pepperoni pizza", "price": 3676},
+        {"name": "Veggie pizza", "price": 3800}
+      ]
+    },
+    {
+      "name": "Simon's Burger",
+      "category": "American",
+      "menu": [
+        {"name": "Nagy adag sültkrumpli", "price": 1290},
+        {"name": "Cheeseburger", "price": 3690},
+        {"name": "Simon's Special Burger", "price": 3390}
+      ]
+    },
+    {
+      "name": "Indigo",
+      "category": "Indian",
+      "menu": [
+        {"name": "Chicken Tikka Masala", "price": 4990},
+        {"name": "Garlic Naan", "price": 1390},
+        {"name": "Basmati rizsa", "price": 1690}
+      ]
+    },
+    {
+      "name": "Taco Fiesta",
+      "category": "Mexican",
+      "menu": [
+        {"name": "Beef Tacos", "price": 2200},
+        {"name": "Chicken Tacos", "price": 2200},
+        {"name": "Veggie Burrito", "price": 2800}
+      ]
+    },
+    {
+      "name": "Curry Corner",
+      "category": "Indian",
+      "menu": [
+        {"name": "Chicken Tikka Masala", "price": 3900},
+        {"name": "Vegetable Curry", "price": 3300},
+        {"name": "Lamb Vindaloo", "price": 4500}
+      ]
+    }
+  ]
+}

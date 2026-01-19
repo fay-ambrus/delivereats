@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtual-restaurant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-restaurant
+  template:
+    metadata:
+      labels:
+        app: virtual-restaurant
+    spec:
+      containers:
+      - name: virtual-restaurant
+        image: ghcr.io/IMAGE_OWNER/virtual-restaurant:IMAGE_TAG
+        env:
+        - name: API_BASE
+          value: "http://traefik.kube-system.svc.cluster.local"

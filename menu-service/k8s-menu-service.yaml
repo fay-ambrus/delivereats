@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: menu-service
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: menu-service

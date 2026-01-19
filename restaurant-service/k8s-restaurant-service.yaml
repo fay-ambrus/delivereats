@@ -18,6 +18,13 @@ spec:
         image: ghcr.io/IMAGE_OWNER/restaurant-service:IMAGE_TAG
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
         env:
         - name: MONGO_URL
           value: "mongodb://mongodb:27017"

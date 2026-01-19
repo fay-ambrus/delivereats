@@ -1,75 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Courier - DeliverEats</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-  <div id="app">
-    <h1>Courier Portal</h1>
+  <div class="app-header">
+    <div class="container">
+      <h1 class="app-title"><i class="bi bi-truck"></i> DeliverEats - Courier</h1>
+    </div>
+  </div>
 
-    <div v-if="!selectedUser">
-      <h2>Select courier</h2>
-      <select v-model="selectedUserId">
-        <option value="">-- Choose a courier --</option>
-        <option v-for="user in users" :value="user.id">
-          {{ user.name }}
-        </option>
-      </select>
-      <button @click="selectUser" :disabled="!selectedUserId">Continue</button>
+  <div id="app" class="container pb-5">
+    <!-- Courier Selection -->
+    <div v-if="!selectedUser" class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <i class="bi bi-person-circle"></i> Select Courier
+          </div>
+          <div class="card-body">
+            <select v-model="selectedUserId" class="form-select mb-3">
+              <option value="">-- Choose a courier --</option>
+              <option v-for="user in users" :value="user.id">{{ user.name }}</option>
+            </select>
+            <button @click="selectUser" :disabled="!selectedUserId" class="btn btn-primary w-100">
+              <i class="bi bi-arrow-right-circle"></i> Continue
+            </button>
+          </div>
+        </div>
 
-      <h3>Add new courier</h3>
-      <input v-model="newUserName" placeholder="Your name">
-      <button @click="addUser" :disabled="!newUserName">Add</button>
+        <div class="card mt-3">
+          <div class="card-header">
+            <i class="bi bi-person-plus"></i> New Courier
+          </div>
+          <div class="card-body">
+            <input v-model="newUserName" placeholder="Your name" class="form-control mb-3">
+            <button @click="addUser" :disabled="!newUserName" class="btn btn-success w-100">
+              <i class="bi bi-plus-circle"></i> Register as Courier
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- Courier Dashboard -->
     <div v-else>
-      <h2>Welcome, {{ selectedUser.name }}!</h2>
-      <button @click="selectedUser = null">Change courier</button>
-
-      <h3>Available deliveries</h3>
-      <div v-if="availableOrders.length === 0">
-        <p>No orders waiting for courier</p>
-      </div>
-      <div v-else>
-        <div v-for="order in availableOrders" :key="order.id">
-          <h4>Order {{ order.id }}</h4>
-          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
-          <p><strong>Items:</strong> {{ order.items.length }}</p>
-          <button @click="acceptOrder(order.id)">Accept delivery</button>
+      <div class="card mb-4">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <h4 class="mb-0"><i class="bi bi-person-check"></i> Welcome, {{ selectedUser.name }}!</h4>
+          <button @click="selectedUser = null" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Change Courier
+          </button>
         </div>
       </div>
 
-      <h3>My Active Deliveries</h3>
-      <div v-if="myActiveOrders.length === 0">
-        <p>No active deliveries</p>
-      </div>
-      <div v-else>
-        <div v-for="order in myActiveOrders" :key="order.id">
-          <h4>Order {{ order.id }}</h4>
-          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
-          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
-          <button @click="updateOrderStatus(order.id, 'delivering')" :disabled="order.status !== 'courier_assigned'">Start delivery</button>
-          <button @click="updateOrderStatus(order.id, 'delivered')" :disabled="order.status !== 'delivering'">Mark as delivered</button>
+      <div class="row">
+        <!-- Available Deliveries -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-box-seam"></i> Available Deliveries
+            </div>
+            <div class="card-body">
+              <div v-if="availableOrders.length === 0" class="text-muted text-center">
+                <i class="bi bi-inbox"></i> No orders available
+              </div>
+              <div v-else>
+                <div v-for="order in availableOrders" :key="order.id" class="order-card">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>#{{ order.id.substring(0, 8) }}</strong>
+                    <span class="badge bg-warning">Ready</span>
+                  </div>
+                  <div class="text-muted small mb-2">
+                    <i class="bi bi-shop"></i> {{ getRestaurantName(order.restaurantId) }}
+                  </div>
+                  <div class="text-muted small mb-3">
+                    <i class="bi bi-bag"></i> {{ order.items.length }} items
+                  </div>
+                  <button @click="acceptOrder(order.id)" class="btn btn-success w-100">
+                    <i class="bi bi-check-circle"></i> Accept Delivery
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <h3>Completed Deliveries</h3>
-      <div v-if="myCompletedOrders.length === 0">
-        <p>No completed deliveries</p>
-      </div>
-      <div v-else>
-        <div v-for="order in myCompletedOrders" :key="order.id">
-          <h4>Order {{ order.id }}</h4>
-          <p><strong>Restaurant:</strong> {{ getRestaurantName(order.restaurantId) }}</p>
-          <p><strong>Status:</strong> {{ prettyPrintStatus(order.status) }}</p>
+        <!-- Active Deliveries -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-bicycle"></i> My Active Deliveries
+            </div>
+            <div class="card-body">
+              <div v-if="myActiveOrders.length === 0" class="text-muted text-center">
+                <i class="bi bi-inbox"></i> No active deliveries
+              </div>
+              <div v-else>
+                <div v-for="order in myActiveOrders" :key="order.id" class="order-card">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>#{{ order.id.substring(0, 8) }}</strong>
+                    <span class="badge bg-info">{{ prettyPrintStatus(order.status) }}</span>
+                  </div>
+                  <div class="text-muted small mb-3">
+                    <i class="bi bi-shop"></i> {{ getRestaurantName(order.restaurantId) }}
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button @click="updateOrderStatus(order.id, 'delivering')" :disabled="order.status !== 'courier_assigned'" class="btn btn-warning btn-sm flex-grow-1">
+                      <i class="bi bi-play"></i> Start
+                    </button>
+                    <button @click="updateOrderStatus(order.id, 'delivered')" :disabled="order.status !== 'delivering'" class="btn btn-success btn-sm flex-grow-1">
+                      <i class="bi bi-check"></i> Delivered
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Deliveries -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-check-circle"></i> Completed Deliveries
+            </div>
+            <div class="card-body">
+              <div v-if="myCompletedOrders.length === 0" class="text-muted text-center">
+                <i class="bi bi-inbox"></i> No completed deliveries
+              </div>
+              <div v-else>
+                <div v-for="order in myCompletedOrders" :key="order.id" class="order-card">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong>#{{ order.id.substring(0, 8) }}</strong>
+                    <span class="badge bg-success">Delivered</span>
+                  </div>
+                  <div class="text-muted small">
+                    <i class="bi bi-shop"></i> {{ getRestaurantName(order.restaurantId) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="courier.js"></script>
 </body>
 </html>

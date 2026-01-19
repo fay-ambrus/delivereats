@@ -8,7 +8,7 @@ fastify.setErrorHandler((error, request, reply) => {
 });
 
 // Register routes
-fastify.register(require('./routes'), { prefix: '/api/user' });
+fastify.register(require('./routes'), { prefix: '/api/users' });
 
 const start = async () => {
   try {

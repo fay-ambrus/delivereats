@@ -19,7 +19,7 @@ const errorSchema = {
 module.exports = async function (fastify, opts) {
   fastify.route({
     method: 'POST',
-    url: '/users',
+    url: '/user',
     schema: {
       body: {
         type: 'object',
@@ -44,7 +44,7 @@ module.exports = async function (fastify, opts) {
 
   fastify.route({
     method: 'GET',
-    url: '/users',
+    url: '/user',
     schema: {
       response: {
         200: {
@@ -61,7 +61,7 @@ module.exports = async function (fastify, opts) {
 
   fastify.route({
     method: 'GET',
-    url: '/users/:id',
+    url: '/user/:id',
     schema: {
       params: {
         type: 'object',

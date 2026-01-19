@@ -18,7 +18,7 @@ createApp({
   },
   methods: {
     async fetchUsers() {
-      const response = await fetch('/api/customer/users');
+      const response = await fetch('/api/users/user');
       this.users = await response.json();
     },
 
@@ -30,7 +30,7 @@ createApp({
 
     async addUser() {
       if (!this.newUserName) return;
-      const response = await fetch('/api/customer/users', {
+      const response = await fetch('/api/users/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: this.newUserName })

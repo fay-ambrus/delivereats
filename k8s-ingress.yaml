@@ -22,14 +22,7 @@ spec:
             name: menu-service
             port:
               number: 3000
-      - path: /api/customer
-        pathType: Prefix
-        backend:
-          service:
-            name: user-service
-            port:
-              number: 3000
-      - path: /api/user
+      - path: /api/users
         pathType: Prefix
         backend:
           service:

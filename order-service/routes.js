@@ -21,7 +21,8 @@ const orderSchema = {
       type: 'array',
       items: orderItemSchema
     },
-    status: { type: 'string' }
+    status: { type: 'string' },
+    courierId: { type: 'string' }
   }
 };
 

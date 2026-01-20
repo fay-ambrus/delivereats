@@ -53,6 +53,8 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
+        kubectl apply -f k8s-traefik.yaml
+        kubectl rollout status deployment/traefik --timeout=2m
         kubectl apply -f k8s-mongodb.yaml
         kubectl apply -f k8s-postgres.yaml
         kubectl apply -f k8s-rabbitmq.yaml

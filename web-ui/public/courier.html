@@ -145,6 +145,11 @@
                     <i class="bi bi-shop"></i> {{ getRestaurantName(order.restaurantId) }}
                   </div>
                 </div>
+                <button v-if="allOrders.filter(o => o.courierId === selectedUser.id && o.status === 'delivered').length > 5" 
+                        @click="showAllCompleted = !showAllCompleted" 
+                        class="btn btn-sm btn-outline-primary w-100 mt-2">
+                  {{ showAllCompleted ? 'Show Less' : 'Show All' }}
+                </button>
               </div>
             </div>
           </div>

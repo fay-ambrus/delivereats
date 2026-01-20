@@ -119,6 +119,11 @@
                   <div class="text-muted small">{{ getRestaurantName(order.restaurantId) }}</div>
                   <div class="price-tag mt-2">{{ computeOrderTotal(order) }} Ft</div>
                 </div>
+                <button v-if="userOrders.filter(o => o.status === 'delivering' || o.status === 'delivered').length > 5" 
+                        @click="showAllCompleted = !showAllCompleted" 
+                        class="btn btn-sm btn-outline-primary w-100 mt-2">
+                  {{ showAllCompleted ? 'Show Less' : 'Show All' }}
+                </button>
               </div>
             </div>
           </div>

@@ -10,7 +10,8 @@ createApp({
       editingItem: null,
       newItem: { name: '', priceHUF: '' },
       restaurantCategory: '',
-      restaurantOrders: []
+      restaurantOrders: [],
+      showAllCompleted: false
     }
   },
   methods: {
@@ -134,7 +135,8 @@ createApp({
       return this.restaurantOrders.filter(o => o.status !== 'delivering' && o.status !== 'delivered');
     },
     completedOrders() {
-      return this.restaurantOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
+      const orders = this.restaurantOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
+      return this.showAllCompleted ? orders : orders.slice(0, 5);
     }
   },
 

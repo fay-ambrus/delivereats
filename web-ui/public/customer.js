@@ -13,7 +13,8 @@ createApp({
       cart: {},
       viewMode: 'restaurants',
       userOrders: [],
-      allMenuItems: []
+      allMenuItems: [],
+      showAllCompleted: false
     }
   },
   methods: {
@@ -153,7 +154,8 @@ createApp({
     },
 
     completedOrders() {
-      return this.userOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
+      const orders = this.userOrders.filter(o => o.status === 'delivering' || o.status === 'delivered');
+      return this.showAllCompleted ? orders : orders.slice(0, 5);
     }
   },
 

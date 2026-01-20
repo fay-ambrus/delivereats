@@ -7,7 +7,8 @@ const app = createApp({
       selectedUserId: '',
       newUserName: '',
       restaurants: [],
-      allOrders: []
+      allOrders: [],
+      showAllCompleted: false
     }
   },
   methods: {
@@ -86,10 +87,11 @@ const app = createApp({
     },
 
     myCompletedOrders() {
-      return this.allOrders.filter(o =>
+      const orders = this.allOrders.filter(o =>
         o.courierId === this.selectedUser.id &&
         o.status === 'delivered'
       );
+      return this.showAllCompleted ? orders : orders.slice(0, 5);
     }
   },
 

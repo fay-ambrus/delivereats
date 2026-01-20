@@ -10,6 +10,6 @@ spec:
         image: ghcr.io/IMAGE_OWNER/seed-data:IMAGE_TAG
         env:
         - name: API_BASE
-          value: "http://traefik.kube-system.svc.cluster.local"
+          value: "http://traefik.default.svc.cluster.local"
       restartPolicy: OnFailure
   backoffLimit: 3

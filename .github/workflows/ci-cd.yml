@@ -51,6 +51,11 @@ jobs:
       run: |
         kubectl config set-cluster default --insecure-skip-tls-verify=true
 
+    - name: Cleanup completed pods
+      run: |
+        kubectl delete pods --field-selector=status.phase==Succeeded --ignore-not-found=true
+        kubectl delete pods --field-selector=status.phase==Failed --ignore-not-found=true
+
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f k8s-traefik.yaml
@@ -66,4 +71,5 @@ jobs:
         for service in ${{ env.SERVICES }}; do
           kubectl rollout status deployment/$service --timeout=2m
         done
+        sed "s|IMAGE_OWNER|${{ env.IMAGE_PREFIX }}|g; s|IMAGE_TAG|${{ github.sha }}|g" seed-data/k8s-seed-data.yaml | kubectl apply -f -
         kubectl get pods,svc,ingress,hpa

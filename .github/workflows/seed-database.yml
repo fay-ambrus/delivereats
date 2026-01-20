@@ -35,6 +35,8 @@ jobs:
     - name: Delete old seed job if exists
       run: |
         kubectl delete job seed-data --ignore-not-found=true
+        kubectl delete pods --field-selector=status.phase==Succeeded --ignore-not-found=true
+        kubectl delete pods --field-selector=status.phase==Failed --ignore-not-found=true
 
     - name: Deploy seed job
       run: |
